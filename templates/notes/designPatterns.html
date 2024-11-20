@@ -1,0 +1,1976 @@
+{{define "notes/designPatterns.html"}}
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>设计模式</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-transparentGray { background-color: rgba(227, 226, 224, 0); }
+.select-value-color-translucentGray { background-color: rgba(0, 0, 0, 0.06); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="4a31dab9-128d-4a64-ae4d-356f49811709" class="page sans"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/rijksmuseum_jansz_1636.jpg" style="object-position:center 50%"/><h1 class="page-title">设计模式</h1><p class="page-description"></p></header><div class="page-body"><p id="140d6fb7-26af-80eb-addf-d56e1076222e" class="">
+</p><h1 id="10cd6fb7-26af-80a0-912f-ced0f1554062" class="">面向对象设计原则</h1><h2 id="10cd6fb7-26af-8049-9b12-f03f4adc3dbf" class="">三大特性：</h2><ol type="1" id="10cd6fb7-26af-806a-92ea-ea03b5eaeca3" class="numbered-list" start="1"><li><mark class="highlight-yellow_background"><strong>封装</strong></mark><p id="10cd6fb7-26af-80a6-a912-e51d98f9b2d5" class="">利用抽象数据类型将数据和基于数据的操作封装在一起，使其构成一个不可分割的独立实体。数据被保护在抽象数据类型的内部，尽可能地隐藏内部的细节，只保留一些对外的接口使其与外部发生联系。用户无需关心对象内部的细节，但可以通过对象对外提供的接口来访问该对象。</p></li></ol><ol type="1" id="10cd6fb7-26af-80c8-a66a-c96455293f5f" class="numbered-list" start="2"><li><mark class="highlight-yellow_background"><strong>继承</strong></mark><p id="10cd6fb7-26af-8063-ac53-d5d5845692b8" class="">继承实现了  <strong>IS-A</strong> 关系，例如 Cat 和 Animal 就是一种 IS-A 关系，因此 Cat 可以继承自 Animal，从而获得 Animal 非 private 的属性和方法。</p><p id="10cd6fb7-26af-8017-bdda-ce8959823363" class="">继承应该遵循里氏替换原则，子类对象必须能够替换掉所有父类对象。</p><p id="10cd6fb7-26af-80ca-91a1-d9a4463fc972" class="">Cat 可以当做 Animal 来使用，也就是说可以使用 Animal 引用 Cat 对象。父类引用指向子类对象称为  <strong>向上转型</strong> 。</p></li></ol><ol type="1" id="10cd6fb7-26af-8054-a2c5-ca0a254a8522" class="numbered-list" start="3"><li><mark class="highlight-yellow_background"><strong>多态</strong></mark><p id="10cd6fb7-26af-8005-9d45-dc98465f6e7e" class="">多态分为编译时多态和运行时多态：</p><ul id="10cd6fb7-26af-80ec-bdc4-feaa952df3b1" class="bulleted-list"><li style="list-style-type:disc">编译时多态主要指方法的重载</li></ul><ul id="10cd6fb7-26af-804d-bb38-dfd67921f3a1" class="bulleted-list"><li style="list-style-type:disc">运行时多态指程序中定义的对象引用所指向的具体类型在运行期间才确定</li></ul><p id="10cd6fb7-26af-80ac-951a-ea3d7ff69f0e" class="">运行时多态有三个条件：</p><ul id="10cd6fb7-26af-8027-98c8-db777460a4d0" class="bulleted-list"><li style="list-style-type:disc">继承</li></ul><ul id="10cd6fb7-26af-8036-b7e4-f9131405f755" class="bulleted-list"><li style="list-style-type:disc">覆盖（重写）</li></ul><ul id="10cd6fb7-26af-80cd-b889-d3562f7905d8" class="bulleted-list"><li style="list-style-type:disc">向上转型</li></ul></li></ol><h1 id="10cd6fb7-26af-804a-9ec5-cdc1cfa20b2c" class="">类间关系</h1><h3 id="10cd6fb7-26af-80e8-a90e-c8d6b3adc03b" class="">1. <strong>依赖关系 (Dependency)</strong></h3><p id="10cd6fb7-26af-809a-83fb-d00045dea3ce" class=""><strong>定义</strong>：一个类使用了另一个类，但它们之间并没有紧密的耦合关系。这种关系通常是短期的，即一个类的某个方法中暂时使用另一个类的对象。</p><p id="10cd6fb7-26af-8075-9f18-c847606b9808" class=""><strong>特征</strong>：依赖关系表示“使用”，一般通过方法参数或局部变量引入。</p><p id="10cd6fb7-26af-8009-aac0-f0057aabfa4d" class=""><strong>示例</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8077-ad6b-c69d9c80e9dc" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class A {
+public:
+    void doSomething(B&amp; b) {
+        b.performAction();  // A依赖B，因为A的操作使用了B对象。
+    }
+};
+</code></pre><p id="10cd6fb7-26af-80b2-9d85-cbf4bc6253f2" class="">在上面的例子中，<code>A</code>类依赖于<code>B</code>类的对象来完成一些操作。依赖关系通常是短暂的，不会影响对象的生命周期。</p><hr id="10cd6fb7-26af-802a-9207-c556b3cc7a24"/><h3 id="10cd6fb7-26af-80f8-a399-c6020f727429" class="">2. <strong>关联关系 (Association)</strong></h3><p id="10cd6fb7-26af-805e-b4d6-cfc1e50654a1" class=""><strong>定义</strong>：表示一个类知道另一个类，并且它们之间存在某种联系。关联可以是双向的或单向的，关联关系比依赖关系更为强烈。</p><p id="10cd6fb7-26af-80f6-a4d0-c67c0011b492" class=""><strong>特征</strong>：关联关系表示“知道”，通常通过类的成员变量来表示。</p><p id="10cd6fb7-26af-80c3-be75-df1e29f8ff52" class=""><strong>单向关联</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8093-94c4-c05b425a09d9" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class Teacher {
+private:
+    Student* student;  // Teacher知道Student，但Student不需要知道Teacher
+};
+</code></pre><p id="10cd6fb7-26af-802c-bdc1-c59d4f19c064" class=""><strong>双向关联</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8068-8d01-d9760753cb42" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class Teacher;
+
+class Student {
+private:
+    Teacher* teacher;
+};
+
+class Teacher {
+private:
+    Student* student;
+};
+</code></pre><p id="10cd6fb7-26af-809f-a35f-f233e89371e7" class="">在双向关联中，<code>Teacher</code>和<code>Student</code>相互知道对方。</p><hr id="10cd6fb7-26af-8009-b344-fbe95ebe4a33"/><h3 id="10cd6fb7-26af-800b-b7bc-cdc990724423" class="">3. <strong>聚合关系 (Aggregation)</strong></h3><p id="10cd6fb7-26af-80dd-acc2-ddfe97b5ec35" class=""><strong>定义</strong>：是一种特殊的关联关系，表示“整体-部分”的关系，但整体和部分是弱依赖的，部分对象可以独立于整体对象而存在。</p><p id="10cd6fb7-26af-8028-a97e-ec55ab2bec5f" class=""><strong>特征</strong>：聚合关系常被称为“Has-A”关系，通常是通过一个类持有另一个类对象的指针或引用来实现的。部分对象的生命周期独立于整体。</p><p id="10cd6fb7-26af-80d0-8eeb-f02e62fa1c64" class=""><strong>示例</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8081-8b6e-cf56bedc14f1" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class Team {
+private:
+    std::vector&lt;Player*&gt; players;  // Team由多个Player组成，但Player的生命周期独立于Team
+};
+</code></pre><p id="10cd6fb7-26af-801f-9d0c-c88f7938a33c" class="">在这个例子中，<code>Team</code>类和<code>Player</code>类形成聚合关系，即一个<code>Team</code>由多个<code>Player</code>组成，但<code>Player</code>可以独立存在，<code>Team</code>不负责管理<code>Player</code>的生命周期。</p><hr id="10cd6fb7-26af-80dd-ae99-c8ad6c482d89"/><h3 id="10cd6fb7-26af-80f2-a598-fbf21506d976" class="">4. <strong>组合关系 (Composition)</strong></h3><p id="10cd6fb7-26af-8077-9bd0-f66be945fcd2" class=""><strong>定义</strong>：也是一种“整体-部分”的关系，但与聚合关系不同，组合关系中的部分对象的生命周期依赖于整体对象，即如果整体对象销毁，部分对象也会销毁。</p><p id="10cd6fb7-26af-8064-9ef9-c41de0134f74" class=""><strong>特征</strong>：组合关系也是“Has-A”关系，但其生命周期是紧密绑定的，通常通过类的成员变量直接持有另一个类的对象。</p><p id="10cd6fb7-26af-800f-b5a8-e7a6ac1f0e71" class=""><strong>示例</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-80fa-9590-e0db5401d0c5" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class House {
+private:
+    Room room;  // House包含Room，Room不能独立存在
+};
+</code></pre><p id="10cd6fb7-26af-8029-ba51-f3be17c8bbe4" class="">在这个例子中，<code>House</code>和<code>Room</code>形成组合关系，<code>Room</code>的生命周期依赖于<code>House</code>，如果<code>House</code>被销毁，<code>Room</code>也会被销毁。</p><hr id="10cd6fb7-26af-80ee-b421-de0fd21cd4c6"/><h3 id="10cd6fb7-26af-8051-bd00-c3b466ac4362" class="">5. <strong>继承关系 (Inheritance)</strong></h3><p id="10cd6fb7-26af-8038-a492-db5e51b0a53b" class=""><strong>定义</strong>：继承关系是一种“is-a”关系，表示一个类是另一个类的子类。子类继承父类的属性和行为，且可以增加新的行为或覆盖父类的方法。</p><p id="10cd6fb7-26af-80ef-af9c-e0931959ede0" class=""><strong>特征</strong>：继承关系表示一种层次化的结构，子类可以复用父类的代码。</p><p id="10cd6fb7-26af-8056-b762-fe1fe366db44" class=""><strong>示例</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8056-8dbc-e6d8c9bb3ea3" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class Animal {
+public:
+    void eat() {}
+};
+
+class Dog : public Animal {
+public:
+    void bark() {}
+};
+</code></pre><p id="10cd6fb7-26af-80cd-a9f3-f16e1261564b" class="">在这个例子中，<code>Dog</code>类继承了<code>Animal</code>类，<code>Dog</code>类是<code>Animal</code>类的特化，继承了<code>Animal</code>类的<code>eat()</code>方法，还增加了自己的<code>bark()</code>行为。</p><hr id="10cd6fb7-26af-8026-b521-e01d4f37d812"/><h3 id="10cd6fb7-26af-80c8-9628-f5dcd83e693a" class="">6. <strong>实现关系 (Realization)</strong></h3><p id="10cd6fb7-26af-80c3-9038-f21dba9deaa0" class=""><strong>定义</strong>：当一个类实现了某个接口或抽象类时，称之为实现关系。实现关系表示类“实现”了接口定义的行为。</p><p id="10cd6fb7-26af-8069-b05a-fdc8b825a89f" class=""><strong>特征</strong>：通常接口或抽象类只定义方法，而具体的类提供方法的实现。</p><p id="10cd6fb7-26af-80cc-9fb3-facb7b130190" class=""><strong>示例</strong>：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-803c-a2e6-caf40a4098cd" class="code"><code class="language-C++" style="white-space:pre-wrap;word-break:break-all">class Drawable {
+public:
+    virtual void draw() = 0;  // 抽象方法
+};
+
+class Circle : public Drawable {
+public:
+    void draw() override {
+        // 实现具体的draw方法
+    }
+};
+</code></pre><p id="10cd6fb7-26af-807c-9ade-f8ad41060e34" class="">在这个例子中，<code>Circle</code>类实现了<code>Drawable</code>接口中的<code>draw()</code>方法，因此<code>Circle</code>与<code>Drawable</code>之间是实现关系。</p><hr id="10cd6fb7-26af-8025-82f4-cd76b8e582dc"/><h3 id="10cd6fb7-26af-809b-807f-fab6d805cb31" class="">总结：</h3><ol type="1" id="10cd6fb7-26af-80b9-a6d7-ef468d6d8e92" class="numbered-list" start="1"><li><strong>依赖关系</strong>：短期的“使用”关系。</li></ol><ol type="1" id="10cd6fb7-26af-803b-88fc-d246de9fc202" class="numbered-list" start="2"><li><strong>关联关系</strong>：长期的“知道”关系。</li></ol><ol type="1" id="10cd6fb7-26af-80b2-9b5b-c1f35dae56b0" class="numbered-list" start="3"><li><strong>聚合关系</strong>：部分对象可以独立存在的“整体-部分”关系。</li></ol><ol type="1" id="10cd6fb7-26af-809f-b4ef-f2578048580d" class="numbered-list" start="4"><li><strong>组合关系</strong>：部分对象依赖整体的“整体-部分”关系。</li></ol><ol type="1" id="10cd6fb7-26af-8063-b119-f0bbb1487648" class="numbered-list" start="5"><li><strong>继承关系</strong>：子类与父类之间的“is-a”关系。</li></ol><ol type="1" id="10cd6fb7-26af-8070-9038-f87fe30903b3" class="numbered-list" start="6"><li><strong>实现关系</strong>：类与接口或抽象类之间的“实现”关系。</li></ol><p id="10cd6fb7-26af-8054-aabd-f61e18bd8efe" class="">每种关系都有其适用的场景，理解这些关系能够帮助你更好地设计类之间的交互，从而使代码更加清晰、灵活。</p><h1 id="10cd6fb7-26af-80ed-a91c-fc285e88f720" class="">面向对象的设计原则</h1><h3 id="10cd6fb7-26af-80a2-890f-cbd711c91149" class=""><strong>S.O.L.I.D</strong></h3><table id="10cd6fb7-26af-80e7-8ef0-f9420fc52b51" class="simple-table"><tbody><tr id="10cd6fb7-26af-8097-af59-d7155e9c420e"><td id="xi?a" class="">简写</td><td id="nn^i" class="">全拼</td><td id="ajYA" class="">中文翻译</td></tr><tr id="10cd6fb7-26af-80e0-8341-cc61c4d29e69"><td id="xi?a" class="">SRP</td><td id="nn^i" class="">The Single Responsibility Principle</td><td id="ajYA" class="">单一责任原则</td></tr><tr id="10cd6fb7-26af-80e9-8495-e8599f3d0983"><td id="xi?a" class="">OCP</td><td id="nn^i" class="">The Open Closed Principle</td><td id="ajYA" class="">开放封闭原则</td></tr><tr id="10cd6fb7-26af-80d1-b263-f150b4450dd9"><td id="xi?a" class="">LSP</td><td id="nn^i" class="">The Liskov Substitution Principle</td><td id="ajYA" class="">里氏替换原则</td></tr><tr id="10cd6fb7-26af-80db-a5b8-cf5fcac819bd"><td id="xi?a" class="">ISP</td><td id="nn^i" class="">The Interface Segregation Principle</td><td id="ajYA" class="">接口分离原则</td></tr><tr id="10cd6fb7-26af-804e-88d4-d5996c4a6ce9"><td id="xi?a" class="">DIP</td><td id="nn^i" class="">The Dependency Inversion Principle</td><td id="ajYA" class="">依赖倒置原则</td></tr></tbody></table><h3 id="10cd6fb7-26af-8089-b000-fc85b7135883" class=""><strong>1. 单一责任原则</strong></h3><blockquote id="10cd6fb7-26af-80a5-ba00-c3d4a9895a50" class="">修改一个类的原因应该只有一个。</blockquote><p id="10cd6fb7-26af-8043-8a5b-e2932643c8a8" class="">换句话说就是让一个类只负责一件事，当这个类需要做过多事情的时候，就需要分解这个类。</p><p id="10cd6fb7-26af-80c6-a8cf-f31775f20db4" class="">如果一个类承担的职责过多，就等于把这些职责耦合在了一起，一个职责的变化可能会削弱这个类完成其它职责的能力。</p><h3 id="10cd6fb7-26af-806a-a86d-f6e693c97627" class=""><strong>2. 开放封闭原则</strong></h3><blockquote id="10cd6fb7-26af-8055-b75c-ec492c70e989" class="">类应该对扩展开放，对修改关闭。</blockquote><p id="10cd6fb7-26af-8078-b1d4-c12a79f64a80" class="">扩展就是添加新功能的意思，因此该原则要求在添加新功能时不需要修改代码。</p><p id="10cd6fb7-26af-80f0-8831-f1c415db4d6e" class="">符合开闭原则最典型的设计模式是装饰者模式，它可以动态地将责任附加到对象上，而不用去修改类的代码。</p><h3 id="10cd6fb7-26af-808f-b945-d9d20943e71e" class=""><strong>3. 里氏替换原则</strong></h3><blockquote id="10cd6fb7-26af-80ff-8189-c8ef6b67acdb" class="">子类对象必须能够替换掉所有父类对象。</blockquote><p id="10cd6fb7-26af-80ad-81a5-c99dcba908ce" class="">继承是一种 IS-A 关系，子类需要能够当成父类来使用，并且需要比父类更特殊。</p><p id="10cd6fb7-26af-8080-8f10-dade79f0db25" class="">如果不满足这个原则，那么各个子类的行为上就会有很大差异，增加继承体系的复杂度。</p><ol type="1" id="116d6fb7-26af-8082-816d-c41c64fdebca" class="numbered-list" start="1"><li>子类必须实现父类的抽象方法</li></ol><ol type="1" id="116d6fb7-26af-80f6-bb22-ca7a5239c518" class="numbered-list" start="2"><li>子类可以有自己的特殊方法，但是不能修改父类的实现方法</li></ol><ol type="1" id="116d6fb7-26af-8073-9fc2-dcf7f70ef88e" class="numbered-list" start="3"><li>子类的前置条件（接受的参数，调用的函数）要比父类更宽松</li></ol><ol type="1" id="116d6fb7-26af-8070-9667-c5c361f9d53f" class="numbered-list" start="4"><li>子类的后置条件（返回值，抛出的异常）不能比父类更宽松</li></ol><h3 id="10cd6fb7-26af-800c-9ee3-ff9cf50d1547" class=""><strong>4. 接口分离原则</strong></h3><blockquote id="10cd6fb7-26af-80b8-ac50-c5b9100ee8f6" class="">不应该强迫客户依赖于它们不用的方法。</blockquote><p id="10cd6fb7-26af-801f-9d2c-e0f0bf81ce01" class="">因此使用多个专门的接口比使用单一的总接口要好。</p><h3 id="10cd6fb7-26af-80c6-8967-f0489d88983b" class=""><strong>5. 依赖倒置原则</strong></h3><blockquote id="10cd6fb7-26af-806d-9b0a-d8d61cd8bba0" class="">高层模块不应该依赖于低层模块，二者都应该依赖于抽象；<p id="10cd6fb7-26af-80ef-aea8-c4fe72333646" class="">抽象不应该依赖于细节，细节应该依赖于抽象。</p></blockquote><p id="10cd6fb7-26af-8018-b218-e69ee3b9e409" class="">高层模块包含一个应用程序中重要的策略选择和业务模块，如果高层模块依赖于低层模块，那么低层模块的改动就会直接影响到高层模块，从而迫使高层模块也需要改动。</p><p id="13bd6fb7-26af-806d-86d4-ffd3f368d102" class="">
+</p><p id="13bd6fb7-26af-8041-99f4-d9dcb48e5454" class="">高层和底层的分辨：</p><p id="13bd6fb7-26af-80c2-99cc-de58ec01af72" class="">1.	<strong>这个模块是被调用的还是调用其他模块的？</strong></p><ul id="13bd6fb7-26af-80c1-9e6b-efd8c1fc6431" class="bulleted-list"><li style="list-style-type:disc">被调用的通常是低层模块，调用其他模块的通常是高层模块。</li></ul><p id="13bd6fb7-26af-80dd-8bca-d11b569bda06" class="">2.	<strong>这个模块是实现细节还是业务逻辑？</strong></p><ul id="13bd6fb7-26af-8091-9c3b-e8fd7860a67e" class="bulleted-list"><li style="list-style-type:disc">实现细节是低层模块，业务逻辑是高层模块。</li></ul><p id="13bd6fb7-26af-8048-ac17-ec57d1141239" class="">3.	<strong>这个模块是否依赖具体技术？</strong></p><ul id="13bd6fb7-26af-800c-ae80-f50dbc2816c2" class="bulleted-list"><li style="list-style-type:disc">如果依赖具体的技术或实现方式（如数据库类型、API），通常是低层模块。</li></ul><p id="13bd6fb7-26af-8015-b11e-cd9af1ee5ee6" class="">
+</p><p id="10cd6fb7-26af-804b-90e7-e2e2e5f4588f" class="">依赖于抽象意味着：</p><ul id="10cd6fb7-26af-80a2-8976-fc316daf0058" class="bulleted-list"><li style="list-style-type:disc">任何变量都不应该持有一个指向具体类的指针或者引用；</li></ul><ul id="10cd6fb7-26af-8090-b5bd-d5b00bd4626d" class="bulleted-list"><li style="list-style-type:disc">任何类都不应该从具体类派生；</li></ul><ul id="10cd6fb7-26af-8026-8da5-ef36a27a01d4" class="bulleted-list"><li style="list-style-type:disc">任何方法都不应该覆写它的任何基类中的已经实现的方法。</li></ul><h3 id="10cd6fb7-26af-8057-b2f2-c099b463a598" class=""><strong>其他常见原则</strong></h3><p id="10cd6fb7-26af-80dc-9e10-ef7e955a5127" class="">除了上述的经典原则，在实际开发中还有下面这些常见的设计原则。</p><table id="10cd6fb7-26af-808c-95c5-d1eded6ca4a4" class="simple-table"><tbody><tr id="10cd6fb7-26af-8025-b3fc-f87c30c7c4f3"><td id="tTih" class="">简写</td><td id="VK\l" class="">全拼</td><td id="nMsi" class="">中文翻译</td></tr><tr id="10cd6fb7-26af-800d-9b66-d33d8a109c46"><td id="tTih" class="">LOD</td><td id="VK\l" class="">The Law of Demeter</td><td id="nMsi" class="">迪米特法则</td></tr><tr id="10cd6fb7-26af-8081-b652-da000fe03497"><td id="tTih" class="">CRP</td><td id="VK\l" class="">The Composite Reuse Principle</td><td id="nMsi" class="">合成复用原则</td></tr><tr id="10cd6fb7-26af-8020-804e-e7ffb16cf2d5"><td id="tTih" class="">CCP</td><td id="VK\l" class="">The Common Closure Principle</td><td id="nMsi" class="">共同封闭原则</td></tr><tr id="10cd6fb7-26af-8066-a6cd-fb98480e3d15"><td id="tTih" class="">SAP</td><td id="VK\l" class="">The Stable Abstractions Principle</td><td id="nMsi" class="">稳定抽象原则</td></tr><tr id="10cd6fb7-26af-8040-8c04-dcd216ccde00"><td id="tTih" class="">SDP</td><td id="VK\l" class="">The Stable Dependencies Principle</td><td id="nMsi" class="">稳定依赖原则</td></tr></tbody></table><h3 id="10cd6fb7-26af-80a7-96b4-c57fc48e1808" class=""><strong>1. 迪米特法则</strong></h3><p id="10cd6fb7-26af-8083-a2dc-d4bec328d77a" class="">迪米特法则又叫作最少知识原则（Least Knowledge Principle，简写 LKP），就是说一个对象应当对其他对象有尽可能少的了解，不和陌生人说话。</p><h3 id="10cd6fb7-26af-8029-af0b-f2724c883a0b" class=""><strong>2. 合成复用原则</strong></h3><p id="10cd6fb7-26af-8014-9035-d60c750fb3f1" class="">尽量使用对象组合，而不是通过继承来达到复用的目的。</p><h3 id="10cd6fb7-26af-8063-88e1-e98d3980c352" class=""><strong>3. 共同封闭原则</strong></h3><p id="10cd6fb7-26af-80d6-a2a8-c8026fbbb6ec" class="">一起修改的类，应该组合在一起（同一个包里）。如果必须修改应用程序里的代码，我们希望所有的修改都发生在一个包里（修改关闭），而不是遍布在很多包里。</p><h3 id="10cd6fb7-26af-8087-b3b3-c057f6cb5c37" class=""><strong>4. 稳定抽象原则</strong></h3><p id="10cd6fb7-26af-80fe-ab9b-dff5b0579e1a" class="">最稳定的包应该是最抽象的包，不稳定的包应该是具体的包，即包的抽象程度跟它的稳定性成正比。</p><h3 id="10cd6fb7-26af-8008-884b-d267af572098" class=""><strong>5. 稳定依赖原则</strong></h3><p id="10cd6fb7-26af-80c2-91bb-c6cb16e0ff2d" class="">包之间的依赖关系都应该是稳定方向依赖的，包要依赖的包要比自己更具有稳定性。</p><p id="10cd6fb7-26af-80eb-8735-c6239e9d70fd" class="">
+</p><h1 id="10cd6fb7-26af-80cc-be2d-fb5247b3c5ef" class="">模式的利用率</h1><figure id="10cd6fb7-26af-8069-b8f3-eb837dd79c65" class="image"><a href="../../statics/images/designPatterns/use_frequency.png"><img style="width:2708px" src="../../statics/images/designPatterns/use_frequency.png"/></a></figure><p id="10cd6fb7-26af-8043-bef1-f02ca828dcce" class="">
+</p><h1 id="10cd6fb7-26af-80d4-9c50-dc30a4356bbe" class="">Template Method（模版模式）</h1><h2 id="10cd6fb7-26af-8027-ae22-fe9b6ad9afd5" class="">动机：</h2><ul id="10cd6fb7-26af-807c-bb09-eacaa81548ff" class="bulleted-list"><li style="list-style-type:disc">在软件构建过程中，对于某一项任务，常常有稳定的整体操作结构，但是各个子步骤却有很多的改变的需求，或者由于固有的原因（比如框架和应用）而导致无法和任务的整体结构同时完成</li></ul><ul id="10cd6fb7-26af-8094-9922-e83926c2856f" class="bulleted-list"><li style="list-style-type:disc">如何在确定稳定操作结构的前提下，来灵活应对各个子步骤的变化或者晚期实现需求</li></ul><h2 id="10cd6fb7-26af-80a3-894c-e2048b39bf97" class="">定义：</h2><p id="10cd6fb7-26af-8032-afea-fec8909dec40" class="">定义一个操作中的算法的骨架（稳定），从而将一些步骤延迟到子类中。Template Method使得子类可以不改变（复用）一个算法的结构即可重定义（override重写）该算法的特定步骤</p><h2 id="10cd6fb7-26af-80fa-af00-c03dae9e6218" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-80ef-aef0-f67ccf571248" class="code"><code class="language-C++">class Library{
+public:
+	void step1(){//稳定
+		//..
+	}
+	void step3(){//稳定
+		//..
+	}
+	void step5(){//稳定
+		//..
+	}
+	
+	virtual bool step2() = 0;//变化
+	virtual void step4() = 0;//变化
+	
+	void run(){
+		step1();
+		if(step2()){
+			step3();
+		}
+		for(int i = 0; i &lt; 4; i++){
+			step4();
+		}
+		step5();
+	}
+	
+	virtual ~Library() = default;
+};
+
+
+class Application : public Library{
+protected:
+	virtual bool step2() override {
+		//重写具体实现
+	}
+	virtual void step4() override {
+		//重写具体实现
+	}
+}
+
+int main(){
+	Library* pLib = new Application();
+	pLib-&gt;run();
+	
+	delete pLib;
+}</code></pre><h2 id="10cd6fb7-26af-80fc-bfd8-ce5cfeae29cf" class="">类图：</h2><figure id="10cd6fb7-26af-800e-8d51-c06cf4cb1574" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_10.25.10.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-25_10.25.10.png"/></a></figure><h2 id="10cd6fb7-26af-8044-8233-db7d30a83c5e" class="">要点：</h2><ul id="10cd6fb7-26af-804f-a828-c68ad1c1698d" class="bulleted-list"><li style="list-style-type:disc">模版模式是一种非常基础性的设计模式，是代码复用方面的基础实现结构</li></ul><ul id="10cd6fb7-26af-804e-90aa-f0bbb57e96a6" class="bulleted-list"><li style="list-style-type:disc">除了可以灵活应多子步骤的变化，“不要调用我，让我来调用你” 的反向控制结构是模版模式的 典型应用</li></ul><ul id="10cd6fb7-26af-804f-8b37-d610eecb520a" class="bulleted-list"><li style="list-style-type:disc">在具体实现方面，被Template Method调用的虚方法可以实现，也可以没有任何实现方法（抽象方法、纯虚方法），但是一旦实现应该设置成proteceted方法</li></ul><h1 id="10cd6fb7-26af-8003-ae55-d4468d5efdf2" class="">Strategy（策略模式）</h1><h2 id="10cd6fb7-26af-8084-a291-ef572bccacaa" class="">动机：</h2><ul id="10cd6fb7-26af-80c6-a08d-d17bc715746c" class="bulleted-list"><li style="list-style-type:disc">在软件构建过程中，某些对象使用的算法可能多种多样，经常改变，如果将这些算法都编码到对象中，将会使对象变得异常复杂。而且有时候支持不使用的算法也是一个性能负担。</li></ul><ul id="10cd6fb7-26af-8032-af4a-ea091f7519ff" class="bulleted-list"><li style="list-style-type:disc">如何在运行时根据需要透明地更改对象的算法？将算法与对象本身解耦，从而避免上述问题？</li></ul><h2 id="10cd6fb7-26af-804b-9d2d-e0dfd2ad1ad2" class="">定义：</h2><p id="10cd6fb7-26af-809d-b75f-e874c096a841" class="">定义一系列算法，把他们一个个封装起来，并且使他们可互相替换。该模式使算法可独立于使用他的客户程序（稳定）而变化（拓展，添加子类）</p><h2 id="10cd6fb7-26af-8025-b60e-f16a559f9460" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-80e4-a96e-e6c2578e70ed" class="code"><code class="language-C++">enum TaxBase{
+	CN_Tax,
+	US_Tax,
+	DE_Tax
+};
+
+class TaxStrategy{
+public:
+	virtual double calculate(const Context&amp; context) = 0;
+	virtual ~TaxStrategy() = default;
+};
+
+class CNTax : public TaxStrategy{
+public:
+	virtual double caculate(const context&amp; context){
+			//具体实现
+	}
+};
+
+class USTax : public TaxStrategy{
+public:
+	virtual double caculate(const context&amp; context){
+			//具体实现
+	}
+};
+
+class DETax : public TaxStrategy{
+public:
+	virtual double caculate(const context&amp; context){
+			//具体实现
+	}
+};
+
+class SalesOrder{
+private:
+	TaxStrategy* strategy;
+
+public:
+	//工厂模式
+	SaleOrder(StrategyFctory* strategyFactory){
+		this-&gt;strategy = strategyFactory-&gt;NewStrategy();
+	}
+	~SaleOreder(){
+		delete this-&gt;strategy;
+	}
+	
+	double calculateTax(){
+		Context context();
+		double val = strategy-&gt;calculate(context);//多态调用
+	}
+};</code></pre><h2 id="10cd6fb7-26af-802b-bae4-ec4c337748e1" class="">类图：</h2><figure id="10cd6fb7-26af-80e7-9278-dbc2f5af1479" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_10.47.37.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-25_10.47.37.png"/></a></figure><h2 id="10cd6fb7-26af-8031-abe7-e8002fd80dda" class="">要点：</h2><ul id="10cd6fb7-26af-8053-9def-faa1fec60c4e" class="bulleted-list"><li style="list-style-type:disc">Strategy及基子类为组件提供了一系列可重用的算法，从而可以使得类型在运行时方便地根据需要在各个算法之间进行切换。</li></ul><ul id="10cd6fb7-26af-80c0-9c32-f7260f7f9ac3" class="bulleted-list"><li style="list-style-type:disc">Strategy模式提供了用条件判断语句以外的另一种选择，消除条件判断语句，就是在解耦合。含有许多条件判断语句的代码通常都需要Strategy模式。</li></ul><ul id="10cd6fb7-26af-8004-a13f-c88dab9f851d" class="bulleted-list"><li style="list-style-type:disc">如果Strategy对象没有实例变量，那么各个上下文可以共享同一个Strategy对象，从而节省对象开销。</li></ul><h1 id="10cd6fb7-26af-803a-8e93-d182480eabcd" class="">Observer（观察者模式）</h1><h2 id="10cd6fb7-26af-8057-8da5-c57d25215761" class="">动机：</h2><ul id="10cd6fb7-26af-80f1-aa86-d07bd22c0c03" class="bulleted-list"><li style="list-style-type:disc">在软件构建过程中，我们需要为某些对象建立一种“通知依赖关系”即一个对象（目标对象）的状态发生改变，所有的依赖对象（观察者对象）都将得到通知。如果这样的依赖关系过于紧密，<br/>将使软件不能很好地抵御变化。<br/></li></ul><ul id="10cd6fb7-26af-807e-89ba-f7f1d72f9adc" class="bulleted-list"><li style="list-style-type:disc">使用面向对象技术，可以将这种依赖关系弱化，并形成一种稳定的依赖关系。从而实现软件体系结构的松耦合。</li></ul><h2 id="10cd6fb7-26af-802e-a6a1-e8ec97bb597d" class="">定义：</h2><p id="10cd6fb7-26af-809c-af2f-e23ad7d05b9a" class="">定义对象间的一种一对多的依赖关系，以便当一个对象的状态发生改变的时候，所有依赖他的对象都得到通知并自动更新</p><h2 id="10cd6fb7-26af-8032-9e2a-ff7b5db10086" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8009-b4d7-de17d38658cf" class="code"><code class="language-C++">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+// 观察者接口（定义更新接口）
+class Observer {
+public:
+    virtual ~Observer() {}
+    virtual void update(const std::string &amp;message) = 0;
+};
+
+// 被观察者接口（定义管理观察者的方法）
+class Subject {
+public:
+    virtual ~Subject() {}
+    virtual void attach(Observer *observer) = 0;
+    virtual void detach(Observer *observer) = 0;
+    virtual void notify() = 0;
+};
+
+// 具体的被观察者类
+class ConcreteSubject : public Subject {
+private:
+    std::vector&lt;Observer*&gt; observers; // 维护观察者列表
+    std::string message;
+    
+public:
+    void attach(Observer *observer) override {
+        observers.push_back(observer);
+    }
+    
+    void detach(Observer *observer) override {
+        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+    }
+    
+    void notify() override {
+        for (Observer *observer : observers) {
+            observer-&gt;update(message);  // 通知所有观察者
+        }
+    }
+
+    // 具体的被观察者更新状态的方法
+    void setMessage(const std::string &amp;newMessage) {
+        message = newMessage;
+        notify();  // 每次状态改变时通知观察者
+    }
+};
+
+// 具体的观察者类
+class ConcreteObserver : public Observer {
+private:
+    std::string observerName;
+    ConcreteSubject &amp;subject;  // 观察者持有被观察者的引用，便于获取数据
+    
+public:
+    ConcreteObserver(const std::string &amp;name, ConcreteSubject &amp;subject) : observerName(name), subject(subject) {}
+
+    void update(const std::string &amp;message) override {
+        std::cout &lt;&lt; &quot;Observer &quot; &lt;&lt; observerName &lt;&lt; &quot; received message: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    }
+};
+
+int main() {
+    ConcreteSubject subject;
+
+    ConcreteObserver observer1(&quot;Observer1&quot;, subject);
+    ConcreteObserver observer2(&quot;Observer2&quot;, subject);
+
+    subject.attach(&amp;observer1);
+    subject.attach(&amp;observer2);
+
+    subject.setMessage(&quot;Hello Observers!&quot;);  // 更新消息并通知所有观察者
+
+    subject.detach(&amp;observer1);  // 移除一个观察者
+    subject.setMessage(&quot;Observer1 detached!&quot;);
+
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-80e1-8c1e-df1a8377781e" class="">类图：</h2><figure id="10cd6fb7-26af-80ab-ad27-fc13a48892c1" class="image"><a href="../../statics/images/designPatterns/2024-09-25_12.27.53.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-25_12.27.53.png"/></a></figure><h2 id="10cd6fb7-26af-80bf-aedd-e33005238fd7" class="">要点：</h2><ul id="10cd6fb7-26af-8078-8416-f3aa600a0433" class="bulleted-list"><li style="list-style-type:disc">使用面向对象的抽象，Observer模式使得我们可以独立地改变目标与观察者，从而使二者之间的依赖关系达至松耦合。</li></ul><ul id="10cd6fb7-26af-8040-852a-fd8d8d8a1065" class="bulleted-list"><li style="list-style-type:disc">目标发送通知的时候无需指定观察者，通知（携带通知信息）自动传播</li></ul><ul id="10cd6fb7-26af-8086-9d2a-f228a3e6f1b0" class="bulleted-list"><li style="list-style-type:disc">观察者自己决定是否订阅通知，目标对象对此一无所知</li></ul><ul id="10cd6fb7-26af-8045-9d69-e3d55c90f936" class="bulleted-list"><li style="list-style-type:disc">Observer模式是基于事件的UI框架中非常常用的设计模式，也是MVC模式的一个重要组成部分。</li></ul><h1 id="10cd6fb7-26af-809a-8d7e-d65cde54bbf4" class="">Decorator（装饰模式）</h1><p id="10cd6fb7-26af-803f-96d5-fe9d3b3975d0" class="">
+</p><h2 id="10cd6fb7-26af-80f0-8dbf-e26025d94139" class="">动机：</h2><ul id="10cd6fb7-26af-80c1-9ae4-c4a0a8cb4edc" class="bulleted-list"><li style="list-style-type:disc">在某些情况下我们可能会“过度地使用继承来扩展对象的功能”，由于继承为类型引入的静态特质，使得这种扩展方式缺乏灵活性；并且随着子类的增多（扩展功能的增多），各种子类的组合（扩展功能的组合）会导致更多子类的膨胀。</li></ul><ul id="10cd6fb7-26af-80e3-a275-d15ac025f1d1" class="bulleted-list"><li style="list-style-type:disc">如何使“对象功能的扩展”能够根据需要来动态地实现？同时避免 “扩展功能的增多”带来的子类膨胀问题？从而使得任何“功能扩展变化”所导致的影响将为最低？</li></ul><h2 id="10cd6fb7-26af-8087-b5bf-db1432dad23a" class="">定义：</h2><p id="10cd6fb7-26af-8000-aadd-e768afde7a71" class="">动态（组合）地给一个对象增加一些额外的职责。就增加功能而言，Decorator模式比生成子类，继承）更灵活（消除重复代码＆减少子类个数）。</p><h2 id="10cd6fb7-26af-802b-8fff-f84a36bc5538" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-802b-92fa-c52b9100c7f9" class="code"><code class="language-C++">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 抽象组件
+class Component {
+public:
+    virtual ~Component() {}
+    virtual std::string operation() const = 0;  // 定义操作接口
+};
+
+// 具体组件类（被装饰的基础对象）
+class ConcreteComponent : public Component {
+public:
+    std::string operation() const override {
+        return &quot;ConcreteComponent&quot;;  // 基础功能
+    }
+};
+
+// 装饰器基类，继承自组件类
+class Decorator : public Component {
+protected:
+    Component* component;  // 持有一个组件的指针
+
+public:
+    Decorator(Component* comp) : component(comp) {}
+    
+    std::string operation() const override {
+        return component-&gt;operation();  // 转发操作到具体组件
+    }
+};
+
+// 具体装饰器A，扩展了装饰器的功能
+class ConcreteDecoratorA : public Decorator {
+public:
+    ConcreteDecoratorA(Component* comp) : Decorator(comp) {}
+
+    std::string operation() const override {
+        return &quot;ConcreteDecoratorA(&quot; + Decorator::operation() + &quot;)&quot;;  // 添加新的行为
+    }
+};
+
+// 具体装饰器B，进一步扩展功能
+class ConcreteDecoratorB : public Decorator {
+public:
+    ConcreteDecoratorB(Component* comp) : Decorator(comp) {}
+
+    std::string operation() const override {
+        return &quot;ConcreteDecoratorB(&quot; + Decorator::operation() + &quot;)&quot;;  // 添加新的行为
+    }
+};
+
+int main() {
+    // 创建一个基础组件
+    Component* simple = new ConcreteComponent();
+    std::cout &lt;&lt; &quot;Base Component: &quot; &lt;&lt; simple-&gt;operation() &lt;&lt; std::endl;
+
+    // 使用装饰器A来装饰基础组件
+    Component* decoratorA = new ConcreteDecoratorA(simple);
+    std::cout &lt;&lt; &quot;Decorator A: &quot; &lt;&lt; decoratorA-&gt;operation() &lt;&lt; std::endl;
+
+    // 在装饰器A的基础上，使用装饰器B再进一步装饰
+    Component* decoratorB = new ConcreteDecoratorB(decoratorA);
+    std::cout &lt;&lt; &quot;Decorator B: &quot; &lt;&lt; decoratorB-&gt;operation() &lt;&lt; std::endl;
+
+    // 清理内存
+    delete simple;
+    delete decoratorA;
+    delete decoratorB;
+
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-80c7-920c-f70661aeea43" class="">类图：</h2><figure id="10cd6fb7-26af-80a6-941c-d399b588871f" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_14.04.23.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-25_14.04.23.png"/></a></figure><h2 id="10cd6fb7-26af-809a-8fc1-d5c245b1955c" class="">要点：</h2><ul id="10cd6fb7-26af-80bc-a067-c1c3d78e0f9a" class="bulleted-list"><li style="list-style-type:disc">通过采用组合而非继承的手法，Decorator模式实现了在运行时（多态）动态扩展对象功能的能力，而且可以根据需要扩展多个功能。避免了使用继承带来的“灵活性差”和“多子类衍生问题”。</li></ul><ul id="10cd6fb7-26af-8019-b0eb-ef375141cde7" class="bulleted-list"><li style="list-style-type:disc">Decorator类在接口上表现为is-a Component的继承关系，即Decorator类继承了Component类所具有的接口。但在实现上又表现为has-a Component的组合关系，即Decorator类又使用了另外一个Component类。</li></ul><ul id="10cd6fb7-26af-80a0-8bd7-f7632b7a3883" class="bulleted-list"><li style="list-style-type:disc">Decorator模式的目的并非解决“多子类衍生的多继承”问题，Decorator模式应用的要点在于解决“主体类在多个方向上的扩展功能”—一是为“装饰”的含义。</li></ul><h1 id="10cd6fb7-26af-806d-ba47-e339b06489fd" class="">Bridge（桥接模式）</h1><h2 id="10cd6fb7-26af-807e-8236-e5eb2574e8d6" class="">动机：</h2><ul id="10cd6fb7-26af-8012-a45f-cb9484d71a9a" class="bulleted-list"><li style="list-style-type:disc">由于某些类型的固有的实现逻辑，使得它们具有两个变化的维度，乃至多个纬度的变化</li></ul><ul id="10cd6fb7-26af-809f-b8e5-d3771b66626f" class="bulleted-list"><li style="list-style-type:disc">如何应对这种“多维度的变化”？如何利用面向对象技术来使得类型可以轻松地沿着两个乃至多个方向变化，而不引入额外的复杂度？</li></ul><h2 id="10cd6fb7-26af-8098-bf95-c8eec3978b63" class="">定义：</h2><p id="10cd6fb7-26af-8089-8214-c479b7e11725" class="">将抽象部分（业务功能）与实现部分（平台实现）分离，使它们都可以独立地变化。</p><h2 id="10cd6fb7-26af-80be-8b24-c139d47e7ca0" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-80e7-a2da-df69d7c001f3" class="code"><code class="language-C++">#include &lt;iostream&gt;
+
+// 实现部分的接口
+class Implementor {
+public:
+    virtual ~Implementor() {}
+    virtual void operationImpl() const = 0;  // 定义底层实现的接口
+};
+
+// 具体的实现类A
+class ConcreteImplementorA : public Implementor {
+public:
+    void operationImpl() const override {
+        std::cout &lt;&lt; &quot;ConcreteImplementorA operation.&quot; &lt;&lt; std::endl;
+    }
+};
+
+// 具体的实现类B
+class ConcreteImplementorB : public Implementor {
+public:
+    void operationImpl() const override {
+        std::cout &lt;&lt; &quot;ConcreteImplementorB operation.&quot; &lt;&lt; std::endl;
+    }
+};
+
+// 抽象类，持有实现接口的引用
+class Abstraction {
+protected:
+    Implementor* implementor;  // 组合实现接口
+
+public:
+    Abstraction(Implementor* impl) : implementor(impl) {}
+    
+    virtual ~Abstraction() {}
+    
+    virtual void operation() const {
+        implementor-&gt;operationImpl();  // 将请求委托给实现类
+    }
+};
+
+// 扩展抽象类，可以定义更加复杂的操作
+class RefinedAbstraction : public Abstraction {
+public:
+    RefinedAbstraction(Implementor* impl) : Abstraction(impl) {}
+
+    void operation() const override {
+        std::cout &lt;&lt; &quot;RefinedAbstraction operation: &quot;;
+        implementor-&gt;operationImpl();
+    }
+};
+
+int main() {
+    Implementor* implA = new ConcreteImplementorA();
+    Implementor* implB = new ConcreteImplementorB();
+    
+    Abstraction* abstraction1 = new RefinedAbstraction(implA);
+    Abstraction* abstraction2 = new RefinedAbstraction(implB);
+    
+    abstraction1-&gt;operation();  // 使用实现A
+    abstraction2-&gt;operation();  // 使用实现B
+
+    delete implA;
+    delete implB;
+    delete abstraction1;
+    delete abstraction2;
+
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-8044-9071-cab099eafffe" class="">类图：</h2><figure id="10cd6fb7-26af-807f-a93c-e22153e044bf" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_14.13.07.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-25_14.13.07.png"/></a></figure><h2 id="10cd6fb7-26af-8001-b0d2-d01ff9202aee" class="">要点：</h2><ul id="10cd6fb7-26af-808f-b130-c33f80cf7f06" class="bulleted-list"><li style="list-style-type:disc">Bridge模式使用“对象间的组合关亲”解耦了抽象和实现之间固有的绑定关系，使得抽象和实现可以沿着各自的维度来变化。所谓抽象和实现沿着各自纬度的变化，即“子类化“它们。</li></ul><ul id="10cd6fb7-26af-801c-86de-cb33e48ec672" class="bulleted-list"><li style="list-style-type:disc">Bridge模式有时候类似于多继承方案，但是多继承方案往往违背单一职责原则（即一个类只有一个变化的原因），复用性比较差。Bridge模式是比多继承方案更好的解决方法。</li></ul><ul id="10cd6fb7-26af-8090-9539-ea858dc51082" class="bulleted-list"><li style="list-style-type:disc">Bridge模式的应用一般在“两个非常强的变化维度”，有时一个类也有多于两个的变化维度，这时可以使用Bridge的扩展模式。</li></ul><h1 id="10cd6fb7-26af-8070-a579-c8b3b1fadfba" class=""><mark class="highlight-yellow_background">Factory（工厂模式）</mark></h1><h2 id="10cd6fb7-26af-8042-8f36-d7ebd8463fef" class="">动机：</h2><ul id="10cd6fb7-26af-80ee-9438-f4cb4b29f720" class="bulleted-list"><li style="list-style-type:disc">在软件系统中，经常面临着创建对象的工作；由于需求的变化，需要创建的对象的具体类型经常变化。</li></ul><ul id="10cd6fb7-26af-8022-a53b-cba6e698ddb2" class="bulleted-list"><li style="list-style-type:disc">如何应对这种变化？如何绕过常规的对象创建方法（new），提供一种“封装机制”来避免客户程序和这种“具体对象创建工作”的紧耦合？</li></ul><h2 id="10cd6fb7-26af-80ce-9e2d-ca5f0d7ed379" class="">定义：</h2><p id="10cd6fb7-26af-80d3-9f63-c6210f1eb00e" class="">定义一个用于创建对象的接口，让子类决定实例化哪一个类。Factory Method使得一个类的实例化延迟（目的：解偶，手段：虚函数）到子类</p><h2 id="10cd6fb7-26af-80e9-abef-f21fc8ebdb54" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8055-8b88-f57e344b3fc0" class="code"><code class="language-C++">#include &lt;iostream&gt;
+
+// 产品接口
+class Product {
+public:
+    virtual ~Product() {}
+    virtual void operation() const = 0;
+};
+
+// 具体产品A
+class ConcreteProductA : public Product {
+public:
+    void operation() const override {
+        std::cout &lt;&lt; &quot;ConcreteProductA operation.&quot; &lt;&lt; std::endl;
+    }
+};
+
+// 具体产品B
+class ConcreteProductB : public Product {
+public:
+    void operation() const override {
+        std::cout &lt;&lt; &quot;ConcreteProductB operation.&quot; &lt;&lt; std::endl;
+    }
+};</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8041-8573-ccb967194ac5" class="code"><code class="language-C++">// 工厂基类，定义了一个工厂方法
+class Creator {
+public:
+    virtual ~Creator() {}
+    virtual Product* factoryMethod() const = 0;  // 工厂方法接口
+    
+    void someOperation() const {
+        // 工厂方法负责创建产品
+        Product* product = this-&gt;factoryMethod();
+        // 使用产品
+        product-&gt;operation();
+        delete product;
+    }
+};
+
+// 具体工厂类A
+class ConcreteCreatorA : public Creator {
+public:
+    Product* factoryMethod() const override {
+        return new ConcreteProductA();
+    }
+};
+
+// 具体工厂类B
+class ConcreteCreatorB : public Creator {
+public:
+    Product* factoryMethod() const override {
+        return new ConcreteProductB();
+    }
+};
+
+int main() {
+    // 使用工厂方法创建具体的产品
+    Creator* creatorA = new ConcreteCreatorA();
+    creatorA-&gt;someOperation();
+    
+    Creator* creatorB = new ConcreteCreatorB();
+    creatorB-&gt;someOperation();
+    
+    delete creatorA;
+    delete creatorB;
+    
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-80dc-913f-e601e9aec8ef" class="">类图：</h2><figure id="10cd6fb7-26af-80a4-9d1c-fc1c1c5a0195" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_19.36.30.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-25_19.36.30.png"/></a></figure><h2 id="10cd6fb7-26af-80f6-89ba-c05ea4570ceb" class="">要点：</h2><ul id="10cd6fb7-26af-80c4-b654-cc47706ffb1c" class="bulleted-list"><li style="list-style-type:disc">Factory Method模式用于隔离类对象的使用者和具体类型之间的耦合关系。面对一个经常变化的具体类型，紧耦合关系（new）会导致软件的脆弱。</li></ul><ul id="10cd6fb7-26af-800c-aa3a-d1744de5da99" class="bulleted-list"><li style="list-style-type:disc">Factory Method模式通过面向对象的手法，将所要创建的具体对象工作延迟到子类，从而实现一种扩展（而非更改）的策略，较好地解决了这种紧耦合关系。</li></ul><ul id="10cd6fb7-26af-80f2-99f2-d73f966b3013" class="bulleted-list"><li style="list-style-type:disc">Factory Method模式解决“单个对象”的需求变化。缺点在于要求创建方法/参数相同。</li></ul><h1 id="10cd6fb7-26af-80c2-9fb4-c7b07be0b031" class="">抽象工厂（Abstract Factory）</h1><h2 id="10cd6fb7-26af-8086-85fa-e1bf3c95aa6b" class="">动机：</h2><ul id="10cd6fb7-26af-8062-9be3-e53f802f9c12" class="bulleted-list"><li style="list-style-type:disc">在软件系统中，经常面临着“<strong>一系列相互依赖的对象</strong>”的创建工作；同时，由于需求的变化，往往存在更多系列对象的创建工作</li></ul><ul id="10cd6fb7-26af-80f1-98be-f64aeae9c335" class="bulleted-list"><li style="list-style-type:disc">如何应对这种变化？如何绕过常规的对象创建方法（new），提供一 种“封装机制”来避免客户程序和这种“多系列具体对象创建工作”的紧耦合？</li></ul><h2 id="10cd6fb7-26af-8076-a299-f85f48ee676b" class="">定义：</h2><p id="10cd6fb7-26af-803a-9276-fd9ccf3d3b0c" class="">提供一个接口，让该接口负责创建一系列“相关或者相互依赖的对象”，无需指定它们具体的类。</p><h2 id="10cd6fb7-26af-805d-9221-e93f24f2f10e" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-80e2-bd80-cc13fc4469fe" class="code"><code class="language-C++">#include &lt;iostream&gt;
+
+// 抽象产品A
+class AbstractProductA {
+public:
+    virtual ~AbstractProductA() {}
+    virtual void operationA() const = 0;
+};
+
+// 抽象产品B
+class AbstractProductB {
+public:
+    virtual ~AbstractProductB() {}
+    virtual void operationB() const = 0;
+};
+
+// 具体产品A1
+class ConcreteProductA1 : public AbstractProductA {
+public:
+    void operationA() const override {
+        std::cout &lt;&lt; &quot;ConcreteProductA1 operation.&quot; &lt;&lt; std::endl;
+    }
+};
+
+// 具体产品B1
+class ConcreteProductB1 : public AbstractProductB {
+public:
+    void operationB() const override {
+        std::cout &lt;&lt; &quot;ConcreteProductB1 operation.&quot; &lt;&lt; std::endl;
+    }
+};
+
+// 抽象工厂，定义一组产品的创建接口
+class AbstractFactory {
+public:
+    virtual ~AbstractFactory() {}
+    virtual AbstractProductA* createProductA() const = 0;
+    virtual AbstractProductB* createProductB() const = 0;
+};
+
+// 具体工厂1，负责创建产品A1和B1
+class ConcreteFactory1 : public AbstractFactory {
+public:
+    AbstractProductA* createProductA() const override {
+        return new ConcreteProductA1();
+    }
+    
+    AbstractProductB* createProductB() const override {
+        return new ConcreteProductB1();
+    }
+};
+
+int main() {
+    // 使用抽象工厂创建第一组相关的产品
+    AbstractFactory* factory1 = new ConcreteFactory1();
+    
+    AbstractProductA* productA1 = factory1-&gt;createProductA();//创建第一组的A产品
+    AbstractProductB* productB1 = factory1-&gt;createProductB();//创建第依祖的B产品
+    
+    productA1-&gt;operationA();
+    productB1-&gt;operationB();
+    
+    delete productA1;
+    delete productB1;
+    delete factory1;
+
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-80e5-a40b-d0d228ff3c0e" class="">类图：</h2><figure id="10cd6fb7-26af-80c6-8028-e402fb558ccd" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_20.20.53.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-25_20.20.53.png"/></a></figure><h2 id="10cd6fb7-26af-80ac-8b99-eabf382b1218" class="">要点：</h2><ul id="10cd6fb7-26af-8059-bb2d-ef93582ea172" class="bulleted-list"><li style="list-style-type:disc">如果没有应对“多系列对象构建”的需求变化，则没有必要使用AbstractFactory模式，这时候使用简单的工厂完全可以。</li></ul><ul id="10cd6fb7-26af-8083-8fb6-e7853beedab1" class="bulleted-list"><li style="list-style-type:disc">“系列对象”指的是在某一特定系列下的对象之间有相互依赖、或作用的关系。不同系列的对象之间不能相互依赖。</li></ul><ul id="10cd6fb7-26af-80b3-b891-e8fa8fc12352" class="bulleted-list"><li style="list-style-type:disc">AbstractFactory模式主要在于应对“新系列”的需求变动。其缺点在于难以应对“新对象”的需求变动。</li></ul><h1 id="10cd6fb7-26af-8073-9e99-e3b8bc9b432b" class="">Prototype（原型模式）</h1><h2 id="10cd6fb7-26af-8091-ba71-c19c95aa69ef" class="">动机：</h2><ul id="10cd6fb7-26af-807d-b6a1-d009b9bfd42d" class="bulleted-list"><li style="list-style-type:disc">在软件系统中，经常面临着“某些结构复杂的对象”的创建工作；由 于需求的变化，这些对象经常面临着剧烈的变化，但是它们却拥有比较稳定一致的接口。</li></ul><ul id="10cd6fb7-26af-80f4-a5e3-cfc1eb52a727" class="bulleted-list"><li style="list-style-type:disc">如何应对这种变化？如何向“客户程序（使用这些对象的程序）”隔离出“这些易变对象”，从而使得“依赖这些易变对象的客户程序”不随着需求改变而改变？</li></ul><h2 id="10cd6fb7-26af-801b-8b1d-d5158aa70367" class="">定义：</h2><p id="10cd6fb7-26af-800f-9d3e-ce133124f823" class="">使用原型实例指定创建对象的种类，然后通过拷贝这些原型来创建新的对象。</p><h2 id="10cd6fb7-26af-80b2-bc20-d13440d2b6f8" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8086-88d7-d40efd73ed75" class="code"><code class="language-C++">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 原型接口
+class Prototype {
+public:
+    virtual ~Prototype() {}
+    virtual Prototype* clone() const = 0;  // 克隆接口
+    virtual void operation() const = 0;    // 一个示例操作
+};
+
+// 具体原型类1
+class ConcretePrototype1 : public Prototype {
+private:
+    std::string state;  // 模拟对象的状态
+
+public:
+    ConcretePrototype1(const std::string&amp; s) : state(s) {}
+
+    // 克隆自身并返回新对象
+    Prototype* clone() const override {
+        return new ConcretePrototype1(*this);  // 使用拷贝构造函数
+    }
+
+    void operation() const override {
+        std::cout &lt;&lt; &quot;ConcretePrototype1 with state: &quot; &lt;&lt; state &lt;&lt; std::endl;
+    }
+};
+
+// 具体原型类2
+class ConcretePrototype2 : public Prototype {
+private:
+    std::string state;  // 模拟对象的状态
+
+public:
+    ConcretePrototype2(const std::string&amp; s) : state(s) {}
+
+    // 克隆自身并返回新对象
+    Prototype* clone() const override {
+        return new ConcretePrototype2(*this);
+    }
+
+    void operation() const override {
+        std::cout &lt;&lt; &quot;ConcretePrototype2 with state: &quot; &lt;&lt; state &lt;&lt; std::endl;
+    }
+};
+
+// 客户端代码
+void clientCode(const Prototype* prototype) {
+    Prototype* clonedPrototype = prototype-&gt;clone();  // 克隆对象
+    clonedPrototype-&gt;operation();                     // 使用克隆的对象
+    delete clonedPrototype;                           // 删除克隆的对象
+}
+
+int main() {
+    // 创建原型对象1
+    Prototype* prototype1 = new ConcretePrototype1(&quot;State1&quot;);
+    clientCode(prototype1);  // 克隆并使用原型对象1
+
+    // 创建原型对象2
+    Prototype* prototype2 = new ConcretePrototype2(&quot;State2&quot;);
+    clientCode(prototype2);  // 克隆并使用原型对象2
+
+    delete prototype1;  // 删除原型对象
+    delete prototype2;  // 删除原型对象
+
+    return 0;
+}</code></pre><h2 id="10cd6fb7-26af-808f-8434-c9808cda6539" class="">要点：</h2><ul id="10cd6fb7-26af-80d1-8d7e-d7ecba0a5aa5" class="bulleted-list"><li style="list-style-type:disc">Prototype模式同样用于隔离类对象的使用者和具体类型（易变类）之间的耦合关系，它同样要求这些“易变类&quot;拥有“稳定的接口”。</li></ul><ul id="10cd6fb7-26af-80de-b39d-eedf705cccc6" class="bulleted-list"><li style="list-style-type:disc">Prototype模式对于“如何创建易变类的实体对象”采用“原型克隆”的方法来做，它使得我们可以非常灵活地动态创建“拥有某些稳定接口”的新对象——所需工作仅仅是注册一个新类的对象（即原型），然后在任何需要的地方Clone。</li></ul><ul id="10cd6fb7-26af-80e9-9f5f-d15c5028bec8" class="bulleted-list"><li style="list-style-type:disc">Prototype模式中的Clone方法可以利用某些框架中的序列化来实现深拷贝。</li></ul><h1 id="d9756c02-dc7d-4561-81ba-f7007365afe6" class="">Builder（生成器模式）</h1><h2 id="106d6fb7-26af-808c-a179-f3385a21ccc2" class="">定义：</h2><p id="106d6fb7-26af-8085-9330-db92258f7596" class="">将一个复杂对象的构建与其表示相分离，使得同样的构建过程（稳定）可以创建不同的表示（变化）。</p><h2 id="43f0f351-8e39-42aa-b42c-0034fb771a2b" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="db621311-b4c7-4c9d-ac68-c67a6b7c85b0" class="code"><code class="language-C++">class house{
+	//....
+};
+
+class houseBuilder{
+public:
+	House* getResult(){
+		retuen pHouse;
+	}
+	virtual ~HouseBuilder(){}
+
+protected：
+	House* pHouse;
+	virtual void BuildPart1() = 0;
+	virtual void BuildPart2() = 0;
+
+};</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="9e513edd-e53a-4012-8bc2-e8737faf9e7b" class="code"><code class="language-C++">class StoneHouse : public House{
+	//..
+};
+
+class StoneHouseBuilder : public HouseBuilder{
+//单个步骤对于外界没意义
+protected:
+	virtual void BuildPart1(){
+		//实现
+	}
+	virtual void BuildPart2(){
+		//实现
+	}
+	
+}; </code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25cfd082-753b-42dc-b7da-42684e61f167" class="code"><code class="language-C++">
+//稳定的类
+//将稳定的构造过程拿出来
+class HouserDirector{
+public:
+	HouseBuilder* pHouseBuilder;
+	
+	HouseDiretor(HouseBuilder* pHouseBuilder){
+		this-&gt;pHouseBuilder = pHouseBuilder;
+	}
+	
+	house* construct(){
+		//建造房子的过程是稳定不变的
+		//不可以写在构造函数中
+		//构造函数中的调用虚函数是实施静态绑定
+		pHouserBuilder-&gt;BuildPart1();
+		for(int i = 0; i &lt; 4 i++){
+			pHouseBuilder-&gt;BuildPart2();
+		}
+		return pHouseBuilder-&gt;getResult();
+	}
+}</code></pre><h2 id="9a765950-e227-4029-811d-0757da6db62e" class="">类图：</h2><figure id="e5ddf3d2-40de-44d0-84cb-3af0bb3ef522" class="image"><a href="../../statics/images/designPatterns/cut2024-09-19_10.26.43.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-19_10.26.43.png"/></a></figure><h1 id="150f0dca-971b-42eb-b557-2529905ee660" class="">Singleton（单件模式）</h1><h2 id="7f471265-725f-44de-ad27-7819c2efbec5" class="">动机：</h2><p id="8191777d-fb22-403e-aa46-eb0b5833de7c" class="">某些特殊的类，必须保证在系统中只存在一个实例，保证逻辑正确，和良好的效率</p><p id="1fbcd60c-efe5-401c-87b0-f7f438ecd117" class="">绕过常规的构造器（new），提供一种机制保证一个类只有一个实例</p><p id="dc60445d-4cec-4d56-a8b0-5ee46bc07ead" class="">这是类的设计者的职责，不是使用者的职责</p><h2 id="a4281d65-6995-49f5-bc2f-518977fa8249" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="9af21195-13a5-4371-94f0-bf0b7db77a2f" class="code"><code class="language-C++">class Singleton{
+private:
+	//需要显式声明成私有的 否则编译器默认构造和拷贝函数声明公有的
+	Singleton();
+	Singleton(const Singleton&amp; other);
+	
+public:
+	static Singleton* getInstance();
+	static Singleton* m_instance;
+};</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="f61088b0-44e9-4fbb-8da2-39b5c6582ad3" class="code"><code class="language-C++">//单线程
+Singleton* Singleton::getInstance(){
+	if(m_instance == nullptr){
+		m_instance = new Singleton();
+	}
+	return m_instance;
+}</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="0a8b969f-dd88-4711-9259-426d60ad4810" class="code"><code class="language-C++">//多线程 能用 代价过高
+Singleton* Singleton;;getInstance(){
+	Lock lock;
+	if(m_instance == nullptr){
+		m_instance = new Singleton();
+	}
+	return m_instance;
+}</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="afb91784-b4cd-4633-99e5-bad6fc5ac37d" class="code"><code class="language-C++">//双检查 错误 不能用 除非volatile 由于内存reorder不安全
+Singleton* Singleton;;getInstance(){
+	if(m_instance == nullptr){
+		Lock lock;
+		if(m_instance == nullptr){
+			//内存reorder
+			m_instance = new Singleton();
+		}	
+	}
+	return m_instance;
+}</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="07f84ea9-3963-48f7-8b8e-a6bdf6ad1eff" class="code"><code class="language-C++">//C++ 11版本之后的跨平台实现 （volatile）
+std::atomic&lt;Singleton*&gt; Singleton::m_instance;
+std::mutex Singleton::m_mutex;
+
+Singleton* Singleton::getInstance(){
+	Singleton* tmp = m_instance.load(std::memory_order_acquire);//获取内存fence
+	if(tmp == nullptr){
+		std::lock_guard&lt;std::mutex&gt; lock(m_mutex);
+		tmp = m_instance.load(std::memory_order_relaxed);
+		if(tmp == nullptr){
+			temp = new Singleton;
+			std::atomic_thread_fence(std::memory_order_release);//释放内存fence
+			m_instance.store(tmp, std::memory_order_relaxed);
+		}
+	}
+	return tmp;
+}
+</code></pre><h2 id="106d6fb7-26af-802a-abca-ca8997e091f0" class="">要点：</h2><ul id="106d6fb7-26af-8073-96ad-eaa00aa7f6a2" class="bulleted-list"><li style="list-style-type:disc">一般不支持拷贝构造或者clone函数</li></ul><ul id="106d6fb7-26af-8022-bab9-e702fc43d69c" class="bulleted-list"><li style="list-style-type:disc">实例构造器可以设置为protected允许派生</li></ul><ul id="9e6fa856-b19b-434a-99b9-617316ccc47e" class="bulleted-list"><li style="list-style-type:disc">多线程的Singleton，注意对双检查锁的正确实现</li></ul><h2 id="ec0cce9b-5c25-4894-a018-a0f813a5c146" class="">类图：</h2><figure id="106d6fb7-26af-80f0-a32d-d0a42d5f3e49" class="image"><a href="../../statics/images/designPatterns/cut2024-09-19_13.37.37.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-19_13.37.37.png"/></a></figure><h1 id="106d6fb7-26af-806a-8bd8-c66989fb7669" class="">Flyweight（享元模式）</h1><h2 id="106d6fb7-26af-8038-a448-ec0cc2cfd1c2" class="">动机：</h2><ul id="106d6fb7-26af-80b3-aa70-c7abaea34975" class="bulleted-list"><li style="list-style-type:disc">纯粹面向对象方案的问题在于大量细粒度的对象会很快充斥在系统中，带来很大的开销（内存）</li></ul><h2 id="88f5df77-3d56-45e0-b758-2db85cc14fd7" class="">定义：</h2><ul id="106d6fb7-26af-804e-ae43-eac73c530fc9" class="bulleted-list"><li style="list-style-type:disc">运用共享技术支持大量细粒度的对象  </li></ul><h2 id="106d6fb7-26af-8021-92ae-e2f37b97034e" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="106d6fb7-26af-800e-9bf3-e98ddffdc15b" class="code"><code class="language-C++">//字体类
+class Font{
+private:
+	//unique object key
+	string key;
+	
+	//object state
+	//....
+public:
+	Font(const string&amp; key){
+		//....
+	}
+};</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="106d6fb7-26af-80d9-8567-cb544e4c63fd" class="code"><code class="language-C++">class FontFactory{
+private:
+	map&lt;string, Font*&gt; fontPool;
+	
+public:
+	Font* getFont(const string&amp; key){
+		map&lt;string, Font*&gt;::iterator item = fontPool.find(key);
+		if(!item == fontPool.edn()){
+			return fontPool[key];
+		}
+		else{
+			Font* font = new Font(key);
+			fontPool[key] = font;
+			return font;
+		}
+	}
+	void clean(){
+		//...
+	}
+};</code></pre><h2 id="106d6fb7-26af-80b2-8892-d22c5dab46ac" class="">类图：</h2><figure id="106d6fb7-26af-80a7-a9cb-df44b2af1c4e" class="image"><a href="../../statics/images/designPatterns/cut2024-09-19_13.47.38.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-19_13.47.38.png"/></a></figure><h2 id="106d6fb7-26af-8034-b011-ff5f360c0658" class="">要点：</h2><ul id="106d6fb7-26af-8025-9caf-da0dea7b0546" class="bulleted-list"><li style="list-style-type:disc">Flyweight很好的解决了面向对象的代价（性能问题），不触及面向对象的抽象性问题</li></ul><ul id="106d6fb7-26af-8012-bc72-c56397c349e6" class="bulleted-list"><li style="list-style-type:disc">采用共享降低对象的个数，以减少内存占用，具体实现的方面，要注意对对象状态的处理（一般设置为只读）</li></ul><ul id="106d6fb7-26af-805b-87c3-ea55c42beed6" class="bulleted-list"><li style="list-style-type:disc">对于对象数量太大的界限需要测试，而不是主观臆断</li></ul><h1 id="b5aa03fb-b295-474d-a9a2-c4d05711122a" class="">Facade（门面模式）</h1><h2 id="107d6fb7-26af-80a8-ae8b-c6feb3df7eae" class="">动机：</h2><p id="107d6fb7-26af-80cc-9da1-f9976d8529c2" class="">解决外部客户程序和系统之间的交互接口</p><h2 id="107d6fb7-26af-80cf-9ba5-e0cdbde606af" class="">定义：</h2><ul id="107d6fb7-26af-80a1-9e07-e0348d6cfa9a" class="bulleted-list"><li style="list-style-type:disc">为子系统中的一组接口提供一致（稳定）的界面，</li></ul><ul id="107d6fb7-26af-8081-9d54-cbf958771256" class="bulleted-list"><li style="list-style-type:disc">定义一个高层接口，使得子系统更加容易使用（复用）</li></ul><h2 id="021f757a-c48f-4989-863b-26d7d1c51273" class="">类图：</h2><figure id="76475df2-1381-4f12-bd19-b56ded25b33f" class="image"><a href="../../statics/images/designPatterns/cut2024-09-20_11.26.50.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-20_11.26.50.png"/></a></figure><h2 id="107d6fb7-26af-8046-ae74-c0e25ec4496e" class="">要点：</h2><ul id="107d6fb7-26af-80c4-953b-c1e980be1e9c" class="bulleted-list"><li style="list-style-type:disc">从客户角度来看，Facade模式简化整个组件系统的接口，实现了组件的内部和外部客户程序的解耦合</li></ul><ul id="a2ddca04-e5e4-4717-a272-e1329b93a61d" class="bulleted-list"><li style="list-style-type:disc">Facade设计模式更注重从架构的层次看整个系统，更多的时候是一种架构设计模式</li></ul><ul id="107d6fb7-26af-806b-b86a-ca985d2ace69" class="bulleted-list"><li style="list-style-type:disc">Facade设计模式中的组件的内部应该是“相互耦合关系比较大的一系列组件”，而不是一个简单功能集合</li></ul><h1 id="14038172-2693-4669-baac-3f198c42f304" class="">Proxy（代理模式）</h1><h2 id="107d6fb7-26af-80ef-8374-d3d570c34f18" class="">动机：</h2><ul id="107d6fb7-26af-8092-ab9d-cb7101226c93" class="bulleted-list"><li style="list-style-type:disc">有些对象由于某种原因（比如对象创建的开销很大、需要安全控制、需要进程外的访问），直接访问会给使用者、或者系统结构带来很多麻烦</li></ul><ul id="107d6fb7-26af-80e8-b803-fe49398d7d5c" class="bulleted-list"><li style="list-style-type:disc">如何在不失去透明操作对象的同时来管理这些对象的复杂性？<mark class="highlight-yellow_background">proxy利用曾加一层间接层的方式</mark></li></ul><h2 id="c6cbd23f-b669-440f-81a0-e399571d0ddf" class="">定义：</h2><p id="107d6fb7-26af-8019-828c-f5af6ad5a79c" class="">为其他对象提供一种代理以控制（隔离，使用接口）对这个对象的访问</p><h2 id="109d6fb7-26af-80ee-9296-f3889fb16e92" class="">类图：</h2><figure id="109d6fb7-26af-806b-94e3-e77b3ef7d215" class="image"><a href="../../statics/images/designPatterns/cut2024-09-22_20.17.56.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-22_20.17.56.png"/></a></figure><h2 id="109d6fb7-26af-800a-88b1-f40fc2c16a57" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="109d6fb7-26af-80f8-9b48-daf4bf7bd1f1" class="code"><code class="language-C++">class iSubject{
+public:
+	virtual void process();
+};
+
+class subjectProxy : public iSubject{
+	
+	//realSubject subject;
+	
+public:
+	virtual void process(){
+			//对realSubject的一种间接访问
+			//...(很复杂 差异性非常大)
+	}
+};
+
+class clientApp{
+	iSubject* subject;
+public:
+	clientAPP(){
+		subject = new subjectProxy;//或者利用其他类型的工厂模式
+	}
+	
+	void doTask(){
+		subject-&gt;process();
+	}
+};</code></pre><h2 id="107d6fb7-26af-80f0-a9ea-f8722c6619ff" class="">要点：</h2><ul id="109d6fb7-26af-8024-b815-f1ede8ae4814" class="bulleted-list"><li style="list-style-type:disc">增加一层间接层，而proxy和realSubject都在iSubject下，所以使用方式相同，但是面向客户的复杂度被降低了</li></ul><ul id="109d6fb7-26af-8017-9866-c0fc9b1f281b" class="bulleted-list"><li style="list-style-type:disc">具体的Proxy设计模式的实现方法，实现的粒度相差很大</li></ul><ul id="109d6fb7-26af-80d0-b40a-ca4a40968d0f" class="bulleted-list"><li style="list-style-type:disc">Proxy并不不一定要求接口完整的一致性，只要能够实现间接控制，有的时候损失一些透明度是可以接受的</li></ul><h1 id="109d6fb7-26af-800b-8084-fc2be345b721" class="">Adapter（适配器）</h1><h2 id="109d6fb7-26af-8096-8a95-f963af761297" class="">动机：</h2><ul id="109d6fb7-26af-80d1-a311-cd9510a9b779" class="bulleted-list"><li style="list-style-type:disc">在软件系统中，由于变化，经常要将一些现存的对象放在新的环境中应用，但是新环境的接口是现在这些对象不满足的</li></ul><ul id="109d6fb7-26af-8023-af89-ed5bd6e732a4" class="bulleted-list"><li style="list-style-type:disc">如何利用现有对象的良好实现，同时又能满足新环境要求的接口</li></ul><h2 id="109d6fb7-26af-8000-8452-e765883829a5" class="">定义：</h2><p id="109d6fb7-26af-803a-9dca-f9ce6ba76f93" class="">将一个类的接口转换成客户希望的另一个接口，Adapter使得原本接口不兼容的类可以在一起工作</p><h2 id="109d6fb7-26af-8048-bdde-d29ccb0e19d1" class="">类图：</h2><figure id="109d6fb7-26af-8047-82a0-c63cdcf38bd0" class="image"><a href="../../statics/images/designPatterns/cut2024-09-22_20.51.06.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-22_20.51.06.png"/></a></figure><h2 id="109d6fb7-26af-8085-b47d-c7b5ea4a63ef" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="f2d1ce2b-742b-4793-b600-8cb4c2ae6ab7" class="code"><code class="language-C++">//目标接口（新接口）
+class ITarget{
+public:
+	virtual void process = 0;
+};
+
+//遗留接口（老接口）
+class IAdptee{
+public:
+	virtual void foo(int data) = 0;
+	virtual int bar() = 0;
+};
+
+//遗留类型
+class OldClass : public IAdpatee{
+	//..
+};
+
+class Adapter : public ITarget{
+protected:
+	IAdaptee* pAdaptee;
+
+public:
+	
+	Adapter(IAdaptee* pAdaptee){
+		this-&gt;pAdaptee = pAdaptee;
+	}	
+	
+	virtual void process(){
+		int data = pAdaptee-&gt;bar();
+		pAdaptee-&gt;foo(data);
+	}
+};</code></pre><p id="109d6fb7-26af-8042-a94a-fd36f6843744" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="109d6fb7-26af-806b-b345-d1d6efeeb614" class="code"><code class="language-C++">int main(){
+	IDaptee* pAdaptee = new OldClass();
+	
+	ITarget* pTarget = new Adapter(pAdaptee);
+	pTarget-&gt;progress();
+}</code></pre><h2 id="109d6fb7-26af-8014-94b5-eded00467be0" class="">要点：</h2><ul id="109d6fb7-26af-808b-9f05-c54732b130d6" class="bulleted-list"><li style="list-style-type:disc">Adapter模式主要用于希望复现一些现存的类，但是接口又与环境要求不一致。在遗留代码复用，类库迁移等方面非常有用</li></ul><ul id="109d6fb7-26af-8037-a052-fcb2b8687878" class="bulleted-list"><li style="list-style-type:disc">Adapter模式主要有两种：对象适配器/类适配器。但是类适配器采用多继承（不推荐），对象适配器采用组合方式，松耦合</li></ul><h1 id="10ad6fb7-26af-80ce-8fb1-ceadb0465bf5" class="">Mediator（中介者）</h1><h2 id="10ad6fb7-26af-806e-99eb-f90e57cc37bc" class="">动机：</h2><ul id="508c01a5-977c-4a56-b218-a64bd8073ca1" class="bulleted-list"><li style="list-style-type:disc">多个对象的相关联交互的情况下，会有复杂的引用关系，如果遇到需求的改变，这种引用关系会面临不断的变化</li></ul><ul id="10ad6fb7-26af-80f8-8d02-e755f17c99fa" class="bulleted-list"><li style="list-style-type:disc">这种情况下，我们可以用一个中介对象来实现对象间的关联关系，避免相互交互的兑现之间的紧耦合引用关系，来抵御变化</li></ul><h2 id="10ad6fb7-26af-8015-a2c2-f97ba159d752" class="">定义：</h2><p id="10ad6fb7-26af-803c-8ede-edffbe58f3de" class="">用一个中介对象来封装（封装变化）一系列的对象的交互。中介者使各对象不需要显式的相互引用（将编译时依赖转换成运行时依赖 ）</p><h2 id="10ad6fb7-26af-80d4-9b95-cb0c88d0be4a" class="">类图：</h2><figure id="10ad6fb7-26af-807c-9fb9-f6724d8a44e0" class="image"><a href="../../statics/images/designPatterns/cut2024-09-23_16.50.24.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-23_16.50.24.png"/></a></figure><h2 id="10ad6fb7-26af-805a-babb-df1266d10a49" class="">要点：</h2><ul id="10ad6fb7-26af-8012-994e-da8ed4648e93" class="bulleted-list"><li style="list-style-type:disc">将多个对象复杂的关系解耦合，将对多个对象间的控制逻辑集中管理，变多个对象的相互关联为多个对象和一个中介者关联，简化系统的可维护性，抵御变化。</li></ul><ul id="10ad6fb7-26af-8046-ad8b-d79696c7f654" class="bulleted-list"><li style="list-style-type:disc">随着控制逻辑的复杂化，Mediator具体对象的实现可能相当复杂。这时候可以对Mediator对象进行分解处理</li></ul><ul id="10ad6fb7-26af-809e-b616-c78d446a71aa" class="bulleted-list"><li style="list-style-type:disc">Facade模式是解偶系统（单向）的对象关联关系，Mediator模式是解偶系统内各个对象之间（双向）的关联关系。 </li></ul><h1 id="10ad6fb7-26af-80c7-a8e3-c179e65252fd" class="">State（状态模式）</h1><h2 id="45565d6d-3f63-4061-908a-5732673ecf32" class="">动机:</h2><ul id="10ad6fb7-26af-8052-905a-d584a2504e60" class="bulleted-list"><li style="list-style-type:disc">在软件构建的过程中，某些对象的的状态改变，行为也会发生改变</li></ul><ul id="10ad6fb7-26af-8096-a542-dab63c771c92" class="bulleted-list"><li style="list-style-type:disc">如何在运行时根据状态来透明的更改对象的行为，而不会为对象操作和状态转换之间引入紧耦合</li></ul><h2 id="10ad6fb7-26af-8049-88d8-c11a7ee3d19e" class="">定义：</h2><p id="10ad6fb7-26af-808f-adea-cd59f3c32767" class="">允许一个对象在其内部状态改变的时候改变他的行为。从而使对象看起来似乎修改了其行为</p><h2 id="87571556-34eb-436c-9b9f-17c23dc7bb25" class="">例子；</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="7d00dbda-228c-47fc-a16c-261cc940bb45" class="code"><code class="language-C++">//抽象类
+class NetworkState{
+public:
+	NetworkState pNext;
+	virtual void operation1() = 0;
+	virtual void operation2() = 0;
+	virtual void operation3() = 0;
+			
+	virtual ~NetworkState(){}
+};
+
+
+//开启状态
+class OpenState : public NetworkState{
+	static NetworkState* m_instance;
+public:
+	//使用Singleton模式 状态只有一个
+	static NetworkState* getInstance(){
+		if(m_instance == nullptr){
+			m_instance = new OpenState();
+		}
+		return m_instance;
+	}
+	
+	void Operation1(){
+		//***
+		pNext = CloseState::getInstance();
+	}
+	
+	void Operation2(){
+		//***
+		pNext = ConnectState::getInstance();
+	}
+	
+	void Operation3(){
+		//***
+		pNext = OpenState::getInstance();
+	}
+
+};
+
+
+//连接状态
+class ConnectState : public NetworkState{
+	//....
+};
+
+
+//关闭状态
+class CloseState : public NetworkState{
+	//....
+};
+
+
+
+//网络app
+class NetworkProcessor{
+	NetworkState* pState;
+	
+public:
+	NetworkProcessor(NetworkState* pState){
+		this-&gt;pState = pState;
+	}
+	
+	void Operation1(){
+		//..
+		pState-&gt;Operation1();
+		pState = pState-&gt;pNext;
+	}
+	
+	void Operation2(){
+		//..
+		pState-&gt;Operation2();
+		pState = pState-&gt;pNext;
+	}
+	
+	void Operation3(){
+		//..
+		pState-&gt;Operation3();
+		pState = pState-&gt;pNext;
+	}
+};</code></pre><h2 id="10ad6fb7-26af-805d-8fa7-d5257825470e" class="">类图：</h2><figure id="921c4a36-b56f-4f9b-9fbe-468a4e5ac765" class="image"><a href="../../statics/images/designPatterns/cut2024-09-23_22.55.58.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-23_22.55.58.png"/></a></figure><h2 id="10ad6fb7-26af-8059-9853-d90e3195ca64" class="">要点：</h2><ul id="10ad6fb7-26af-80f0-84cf-e9a4f8f8f8ba" class="bulleted-list"><li style="list-style-type:disc">State模式将所有与一个特定状态相关的行为都放进一个State的字类对象中，在对象状态切换的时候，切换相应的对象；但同时维持state的接口，实现了操作与状态转换之间的解耦。</li></ul><ul id="10ad6fb7-26af-805e-9f35-eb73005567ee" class="bulleted-list"><li style="list-style-type:disc">使状态的转化是原子性的</li></ul><ul id="10ad6fb7-26af-80e7-b53e-ee6f23158401" class="bulleted-list"><li style="list-style-type:disc">如果State对象没有实例变量，那么各个上下文可以共享一个State对象从而节省对象开销</li></ul><h1 id="42f7d2aa-a937-4643-8183-1f90b29056c9" class="">Memento（备忘录）</h1><h2 id="10ad6fb7-26af-8075-b426-e5f504796e13" class="">动机：</h2><ul id="10ad6fb7-26af-8036-8209-d51bef6db861" class="bulleted-list"><li style="list-style-type:disc">在软件构建中，某些对象在状态转换中，由于某些原因需要回溯状态，这时候如果使用一些公有接口来让其他对象得到对象的状态会暴露对象的细节实现</li></ul><ul id="10ad6fb7-26af-80eb-93b3-e1b6ddf65564" class="bulleted-list"><li style="list-style-type:disc">如何实现对象的良好保存与恢复，同时不破坏对象本身的封装性</li></ul><h2 id="10ad6fb7-26af-80fe-8fcd-f92537616beb" class="">定义：</h2><p id="10ad6fb7-26af-805c-a1c9-ea4b3ed115d6" class="">在不破坏对象本身的封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态，这样就可以将该对象恢复到原先保存的状态</p><h2 id="10ad6fb7-26af-8079-9b26-c23b345367e0" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10ad6fb7-26af-80e8-861c-daeac3b84d52" class="code"><code class="language-C++">class Memento{
+	string state;
+	//..
+	
+public:
+	Memento(const string &amp;s) : state(s) {}
+	string getState() const {return state;}
+	void setState (const string &amp; s){state = s;}
+};
+
+
+class Originator{
+	string state;
+public:
+	Originator(){}
+	
+	Memento createMomento(){
+		Memento m(state);
+		return m;
+	};	
+	
+	void serMemento(const Memento&amp; m){
+		state = m.getState;
+	}
+};
+
+
+int main(){
+	Originator originator;
+	
+		//存储到备忘录
+		Memento mem = originator.createMemento();
+		
+		//..
+		
+		//恢复
+		
+		originator.setMemento(memento);
+}</code></pre><h2 id="10ad6fb7-26af-8095-91ec-cc6f8ad6e57a" class="">类图：</h2><figure id="10ad6fb7-26af-8031-8706-eadb06463118" class="image"><a href="../../statics/images/designPatterns/cut2024-09-23_23.39.19.png"><img style="width:707.9921875px" src="../../statics/images/designPatterns/cut2024-09-23_23.39.19.png"/></a></figure><h2 id="35459c7d-bfab-41fc-9384-7d987715adee" class="">要点：</h2><ul id="80f7224c-939a-4e4a-a11e-3588e4985c37" class="bulleted-list"><li style="list-style-type:disc">备忘录（Memento）存储原发器（Originator）对象的内部状态，在需要时恢复原发器状态。</li></ul><ul id="10ad6fb7-26af-803c-b0d9-daea0c1fe517" class="bulleted-list"><li style="list-style-type:disc">Memento模式的核心是信息隐藏，即Originator需要向外接隐藏信息，保持其封装性。但同时又需要将状态保持到外界（Memento）。</li></ul><ul id="10ad6fb7-26af-801c-a6b5-d4793c283b0b" class="bulleted-list"><li style="list-style-type:disc">由于现代语言运行时（如C#、Java等）都具有相当的对象序列化 支持，因此往往采用效率较高、又较容易正确实现的序列化方案来实现Memento模式。</li></ul><h1 id="610ad999-f0a6-4a21-8e37-dbdeee44efd8" class="">Composite（组合模式）</h1><h2 id="8dbd99b8-9927-497a-a69c-4c323dc3d5f8" class="">动机：</h2><ul id="10bd6fb7-26af-800e-bd2f-d4845c612126" class="bulleted-list"><li style="list-style-type:disc">在某些情况下，客户代码过多的依赖对象容器复杂的内部实现结构，对象容器内部实现结构（而非抽象接口）的变化将引起客户代码的变化，带来弊端</li></ul><ul id="10bd6fb7-26af-8078-9845-e56def0ef7f7" class="bulleted-list"><li style="list-style-type:disc">如何将客户代码和复杂对象容器结构解偶，让对象自己来实现自身的复杂结构，从而使客户就像使用简单对象一样来使用复杂的对象容器</li></ul><h2 id="10bd6fb7-26af-8074-9b42-d04004b6f6e4" class="">定义：</h2><p id="10bd6fb7-26af-800d-aad2-e5326ac9d7c1" class="">将对象组成树形结构以表示“部分-整体”的层次结构。Composite使用户对单个对象和组合对象的使用具有一致性（稳定）</p><h2 id="10bd6fb7-26af-80ab-8b9e-e441cc9dff64" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2df3dbe3-c54f-476f-88f7-0011ada2eb37" class="code"><code class="language-C++">class Component{
+public:
+		virtual void process() = 0;
+		virtual ~Component(){}
+};
+
+class Composite : public Component{
+		string name;
+		list&lt;Component*&gt; elements;
+public:
+		Composite(const string &amp; s) : name(s){}
+		
+		void add(Component* element){
+			elements.push_back(element);
+		}
+		
+		void remove(Component* element){
+			element.remove(element);
+		}
+		
+		void process(){
+			//process current node
+			
+			//process leaf nodes
+			for(auto &amp;e : elements){
+				//虚函数的调用 类似递归
+				e-&gt;process();
+			}
+		}
+};
+
+class Leaf : public Component{
+	string name;
+public:
+	Leaf(string s) : name(s) {}
+	
+	void process(){
+		//process current node
+	}
+};
+
+void Invoke(Component &amp; c){
+	//....
+	c.process();
+	//....
+}
+
+int main(){
+	Composite root(&quot;root&quot;);
+	Composite treeNode1(&quot;treeNode1&quot;);
+	Composite treeNode2(&quot;treeNode2&quot;);
+	Composite treeNode3(&quot;treeNode3&quot;);
+	Composite treeNode4(&quot;treeNode4&quot;);
+	Leaf leaf1(&quot;leaf1&quot;);
+	Leaf leaf1(&quot;leaf1&quot;);
+	
+	root.add(&amp;treeNode1);
+	treeNode1.add(&amp;treeNode2);
+	treeNode2.add(&amp;leaf1);
+	
+	root.add(&amp;treeNode3);
+	treeNode3.add(&amp;treeNode4);
+	treeNode4.add(&amp;leaf2);
+	
+	process(root);
+	
+}</code></pre><h2 id="10bd6fb7-26af-80a0-b6a6-ea08ef8c646b" class="">类图：</h2><figure id="10bd6fb7-26af-8042-8a88-dc5142c2bc83" class="image"><a href="../../statics/images/designPatterns/cut2024-09-24_15.58.55.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-24_15.58.55.png"/></a></figure><h2 id="10bd6fb7-26af-80f3-9493-e0008a5cc460" class="">要点：</h2><ul id="10bd6fb7-26af-8011-b2c7-cd249f32da73" class="bulleted-list"><li style="list-style-type:disc">Composite模式采用树形结构来实现普遍存在的对象容器，从而将一对多的关系转化为一对一，使客户代码可以一致地（复用）处理对象和对象容器，无需关心处理的是单个对象还是组合的对象容器</li></ul><ul id="a1cbdfc4-8b3c-465d-a912-0dc076807754" class="bulleted-list"><li style="list-style-type:disc">将客户代码与复杂的对象容器结构解耦是Composite的核心思想，解耦之后，客户代码与纯粹的抽象接口（而非对象容器的内部实现结构）发生依赖，以此对应变化</li></ul><ul id="10bd6fb7-26af-80b6-b915-f5217aff1447" class="bulleted-list"><li style="list-style-type:disc">在具体实现中，可以让父对象中的子对象反向追溯；如果父对象有频繁的遍历需求，可以利用缓存技巧来改善效率</li></ul><h1 id="10bd6fb7-26af-8017-ac94-c74440124bfd" class="">Iterator（迭代器）</h1><h2 id="10bd6fb7-26af-8013-93d3-ef8cbf62769b" class="">动机：</h2><ul id="10bd6fb7-26af-8068-8beb-f13d3a018474" class="bulleted-list"><li style="list-style-type:disc">集合对象内部结构常常变化，我们希望不暴露其内部结构的同时，可以让外部客户代码透明的访问其中包含的元素；同时这种“透明遍历”也为同一种算法在多种集合对象上进行操作提供可能</li></ul><h2 id="10bd6fb7-26af-8012-99b2-d823fd55e9e1" class="">定义：</h2><p id="10bd6fb7-26af-802c-bb79-f64f55bfe32d" class="">提供一种方法，顺序访问集合元素中的对象，而不暴露在外</p><h2 id="c97b13e4-e654-40d3-864d-d1c8c83e1cfb" class="">类图：</h2><figure id="10bd6fb7-26af-80cf-b6af-ce00b8edf0bd" class="image"><a href="../../statics/images/designPatterns/cut2024-09-24_18.30.23.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-24_18.30.23.png"/></a></figure><h2 id="10bd6fb7-26af-80ea-8db8-f050f86c2f1c" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10bd6fb7-26af-808a-b247-f7c2b0b4a732" class="code"><code class="language-C++">template&lt;typename T&gt;
+class Iterator{
+public:
+		virtual void first() = 0;
+		virtual void next() - 0;
+		virtual bool isDone() const = 0;
+		virtual T&amp; current = 0;
+};
+
+template&lt;typename T&gt;
+class MyCollection{
+		Iterator&lt;T&gt; getIterator(){
+				//...
+		}
+};
+
+template&lt;typename T&gt;
+class MyCollectionIterator : public Iterator&lt;T&gt;{
+		MyCollection&lt;T&gt; mc;
+		
+public:
+		MyCollectionIterator(const MyCollection&lt;T&gt;&amp; c) : mac(c){}
+		
+		void first() override{
+				//...
+		}
+		
+		void next() override{
+				//...
+		}
+		
+		void isDone() override{
+				//...
+		}
+		
+		T&amp; current () override{
+				//...
+		}
+};
+
+void MyAlgorithm(){
+		MyCollection&lt;int&gt; mc;
+		
+		Iterator&lt;int&gt; iter = mc.getIterator();
+		
+		for(iter.first(); !iter.isDone(); iter.next()){
+				cout &lt;&lt; iter.curret() &lt;&lt; endl;
+		}
+};</code></pre><h2 id="2efa0a6a-b2bc-46c5-8613-875a0a7f59a8" class="">要点：</h2><ul id="10bd6fb7-26af-8010-bebb-e529767045eb" class="bulleted-list"><li style="list-style-type:disc"><strong>迭代抽象</strong>：访问一个聚合对象的内容而无需暴露他的内部表示</li></ul><ul id="10bd6fb7-26af-8000-ad8b-ffbeaec5e0c9" class="bulleted-list"><li style="list-style-type:disc"><strong>迭代多态</strong>：为遍历不同的集合结构提供一个统一的接口，从而使统一的算法支持不同的集合结构</li></ul><ul id="10bd6fb7-26af-80be-ab8a-d372f51172eb" class="bulleted-list"><li style="list-style-type:disc"><strong>迭代器的健壮性考虑</strong>：遍历的同时更改迭代器所在的集合结构，<br/>会导致问题。<br/></li></ul><h1 id="10bd6fb7-26af-8023-b4ad-c225fa2c46c5" class="">Chain of Responsibility （职责链）</h1><h2 id="edaa105f-3c2d-4a4f-9a08-791116379265" class="">动机：</h2><ul id="10bd6fb7-26af-8073-9b30-e8de2db65e0b" class="bulleted-list"><li style="list-style-type:disc">在软件构建过程中，一个请求可能被多个对象处理，但是每个请求在运行时候只能有一个接受者，如果显式指定会带来发送者和接受者的紧耦合</li></ul><ul id="a6782ddc-07c5-415c-bb33-bebe63cc4d0f" class="bulleted-list"><li style="list-style-type:disc">让请求的请求者自己在运行时决定来处理请求，从而使两者解耦</li></ul><h2 id="9f355ebc-d84a-4495-97ae-a0c447ed6592" class="">定义：</h2><p id="ff3909f1-ecfd-4861-8f6a-3220abe2367c" class="">使多个对象都有机会处理，从而避免请求的发送者和接收者之间的耦合关系。将这些对象形成一条链，并沿着这条链传递请求，直到有一个对象处理他</p><h2 id="10bd6fb7-26af-8031-9718-f257ced52942" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10bd6fb7-26af-803c-aa6d-eca180d30dc1" class="code"><code class="language-C++">enum class RequestType{
+		REQ_1,
+		REQ_2,
+		REQ_3
+};
+
+class Request{
+		string description;
+		RequestType reqType;
+public:
+		Request(const string&amp; dec, RequstType type) : description(desc), reqType(type){}
+		
+		RequestType getReqType() const {return reqType; }
+		
+		const string&amp; getDescription() const {return description; }
+		
+};
+
+
+//抽象基类
+class ChainHandler{
+		ChainHandler *nextChain;
+		
+		void sendRequestToNextHandler(const Request&amp; req){
+				if(nextChain != nullptr){
+						nextChain-&gt;handle(req);
+				}
+		}
+protected:
+		virtual bool canHandleRequest	(const Request&amp; req) = 0;
+		virtual bool processRequest	(const Request&amp; req) = 0;
+
+public:
+		ChainHandler(){nextChain = nullptr;}
+		void setNextChain(ChainHandler* next){next Chain = next;}
+		
+		void handle(const Request&amp; req){
+				canHandleRequest(req) ? processRequst(req) : sendRequestToNextHandler(req);
+		}
+};
+
+class Handler1 : public ChainHandler{
+protected:
+		bool canHandlerRequest(const Request&amp; req) override{
+				return req.getReqType() == RequestType::REQ_1;
+		}
+		
+		void processRequst(const Requst &amp; req) override{
+				cout &lt;&lt; &quot;Handler1 is handle request&quot; &lt;&lt; req.getDescription() &lt;&lt; endl;
+		}
+};
+
+class Handler2 : public ChainHandler{
+protected:
+		bool canHandlerRequest(const Request&amp; req) override{
+				return req.getReqType() == RequestType::REQ_2;
+		}
+		
+		void processRequst(const Requst &amp; req) override{
+				cout &lt;&lt; &quot;Handler2 is handle request&quot; &lt;&lt; req.getDescription() &lt;&lt; endl;
+		}
+};
+
+class Handler3 : public ChainHandler{
+protected:
+		bool canHandlerRequest(const Request&amp; req) override{
+				return req.getReqType() == RequestType::REQ_3;
+		}
+		
+		void processRequst(const Requst &amp; req) override{
+				cout &lt;&lt; &quot;Handler3 is handle request&quot; &lt;&lt; req.getDescription() &lt;&lt; endl;
+		}
+};
+
+int main(){
+		Handler1 h1;
+		Handler2 h2;
+		Handler3 h3;
+		h1.setNextChain(&amp;h2);
+		h2.setNextChain(&amp;h3);
+		
+		Request req(&quot;process task...&quot;, RequestType::REQ_3);
+		h1.handle(req);
+		
+		return 0;		
+}</code></pre><h2 id="10bd6fb7-26af-8085-9290-f5ed41591c41" class="">类图：</h2><figure id="10bd6fb7-26af-8047-9088-e8db85ae6f00" class="image"><a href="../../statics/images/designPatterns/cut2024-09-24_19.13.26.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-24_19.13.26.png"/></a></figure><h2 id="10bd6fb7-26af-8013-b094-fa3aca993b4b" class="">要点：</h2><ul id="10bd6fb7-26af-8046-9aff-e1df804587d8" class="bulleted-list"><li style="list-style-type:disc">在一个请求有可能有多个接受者的时候，职责链负责将发送者和接受者解耦合，以应对更好的变化</li></ul><ul id="10bd6fb7-26af-8093-a7aa-c0ac133056fb" class="bulleted-list"><li style="list-style-type:disc">应用Chain of Responsibility模式之后，对象的<mark class="highlight-yellow_background">职责分配</mark>更加灵活，我们可以<mark class="highlight-yellow_background">运行时</mark>动态添加/修改请求的处理职责</li></ul><ul id="10bd6fb7-26af-8047-bf53-c195a25f1d40" class="bulleted-list"><li style="list-style-type:disc">如果传递到职责链的末尾仍得不到处理，应该有一个合理的缺省机构。这是每一个接受对象的责任，不是请求对象的责任。</li></ul><h1 id="10bd6fb7-26af-80be-981c-e45a50c4e64a" class="">Commend（命令模式）</h1><h2 id="10bd6fb7-26af-8052-b50e-ef923fa2d11d" class="">动机：</h2><ul id="10bd6fb7-26af-807d-9dad-da3b9c0b0335" class="bulleted-list"><li style="list-style-type:disc">在软件构建的过程中，行为请求者和行为实现者通常是紧耦合的，但是在某些场合，例如需要对行为进行“记录、撤销/重做、事务“等处理，这种无法抵御变化的紧耦合不适合</li></ul><ul id="10bd6fb7-26af-80fb-8384-e78510abc6e0" class="bulleted-list"><li style="list-style-type:disc">如何将“行为请求者”和”行为实现者“解耦合。可以利用将一组行为抽象为对象，可以实现二者之间的松耦合。</li></ul><h2 id="f95d5abf-3e86-4709-94c7-c3164530c124" class="">定义：</h2><p id="fee78a2e-0d29-471c-a759-89636e4e6e0a" class="">将一个请求（行为）封装成对象，从而可使用不同的请求对客户进行参数化；对请求排队或记录请求日志，以及支持可撤销的操作</p><h2 id="10bd6fb7-26af-80b4-a35e-df5344ba4387" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10bd6fb7-26af-80ec-b1d9-e9b47742dc08" class="code"><code class="language-C++">class Command{
+public:
+		virtual void execute() = 0;
+};
+
+class ConcreteCommand1 : public Command{
+		string arg;
+public:
+		ConcreteCommand1(const string&amp; s) : arg(s) {}
+		void execute() override{
+				cout &lt;&lt; &quot;#1 process...&quot; &lt;&lt; arg &lt;&lt; endl;
+		}
+};
+
+class ConcreteCommand2 : public Command{
+		string arg;
+public:
+		ConcreteCommand2(const string&amp; s) : arg(s) {}
+		void execute() override{
+				cout &lt;&lt; &quot;#2 process...&quot; &lt;&lt; arg &lt;&lt; endl;
+		}
+};
+
+//命令的组合（宏命令）
+class MacroCommand : public Command{
+		//Composite模式
+		vector&lt;Command*&gt; commands;
+public:
+		void addCommand(Command* c){ command.push_back(c);}
+		
+		void execute() override{
+				for(auto &amp;c : commands){
+						c-&gt;execute();
+				}
+		}
+};
+
+
+int main(){
+		ConcretCommand1 command1(receiver, &quot;Arg ###&quot;);
+		ConcretCommand2 command2(receiver, &quot;Arg $$$&quot;);
+		
+		MacroCommand macro;
+		macro.adndCommand(&amp;command1);
+		macro.adndCommand(&amp;command2);
+		
+		macro.execute();
+}</code></pre><h2 id="10bd6fb7-26af-80a3-b550-e380c936beb6" class="">类图：</h2><figure id="3348907b-64a4-4fa1-80d6-4400364960a3" class="image"><a href="../../statics/images/designPatterns/cut2024-09-24_20.43.47.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-24_20.43.47.png"/></a></figure><h2 id="10bd6fb7-26af-809f-a1f8-fa7bf3e9a55a" class="">要点：</h2><ul id="10bd6fb7-26af-80cf-be6c-eaa96187fc6a" class="bulleted-list"><li style="list-style-type:disc">Command模式的根本目的在于将“行为请求者”与“行为实现者”解耦，在面向对象语言中，常见的实现手段是“将行为抽象为对象”。</li></ul><ul id="10bd6fb7-26af-806d-a55c-fec592c894f2" class="bulleted-list"><li style="list-style-type:disc">实现Command接口的具体命令对象ConcreteCommand有时候根据需要可能会保存一些额外的状态信息。通过使用Composite模式，可以将多个“命令&quot;封装一个“复合命令&quot;MacroCommand。</li></ul><ul id="10bd6fb7-26af-80c2-9a5f-f8727d1de941" class="bulleted-list"><li style="list-style-type:disc">Command模式与C++中的函数对象有些类似。但两者定义行接口的规范有所区别：Command以面向对象中的“接口-实现”来定义行接口规范，更严格，但有性能损失；C++函数对象以函数签名来定义行接口规范，更灵活，性能更高。</li></ul><h1 id="10bd6fb7-26af-809f-9377-f1240ce28d11" class="">Visitor（访问器模式）</h1><h2 id="10bd6fb7-26af-80dd-952a-f894ba9d4f52" class="">动机：</h2><ul id="10bd6fb7-26af-8068-8987-cf5d0f83f9f0" class="bulleted-list"><li style="list-style-type:disc">在软件开发的过程中，若在分发之后，需要对整个类层次结构添加新的方法（行为），如果直接在基类中更改，会给子类带来很繁重的变更负担，甚至破坏原有设计</li></ul><ul id="10bd6fb7-26af-8014-bd6a-d54ea48116cc" class="bulleted-list"><li style="list-style-type:disc">如何在不更改类的层次结构的前提下，在运行时根据需要透明的为类层次结构上的各个类添加新的操作，而避免上述问题</li></ul><h2 id="10bd6fb7-26af-8013-a550-c54240e01c5e" class="">定义：</h2><p id="10daa713-ed9e-46c0-91bb-146e008e40c6" class="">表示一个作用于某对象结构中的各元素的操作。使得可以在不改变（稳定）各元素的类的前提下定义（扩展）作用于这些元素的新操作（变化）</p><ul id="10bd6fb7-26af-8024-bd93-e52ee0a75ee7" class="bulleted-list"><li style="list-style-type:disc">分发：</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10bd6fb7-26af-8081-ac5d-f10c355d279d" class="code"><code class="language-C++">//Visitor接口：声明对每个具体元素类访问的方法。每个元素类都有一个与之对应的访问方法。
+class Visitor{
+public:
+		virtual void visitElementA(ElementA&amp; element) = 0;
+		virtual void visitElementB(ElementB&amp; element) = 0;
+		virtual ~Visitor(){}
+
+}:
+
+
+//Element（元素）接口：声明一个accept方法，用来接收访问者。
+class Element{
+public:
+		virtual void accept(Visitor&amp; visitor) = 0;//第一次多态辨析
+
+		virtual ~Element(){}
+};  
+
+
+//ConcreteElement（具体元素）：实现Element接口。通过调用访问者的visit方法来实现具体的访问。
+class ElementA : public Element{
+public:
+		void accept(Visitor &amp;visitor) override{
+				visitor.visitElementA(*this);//第二次多态辨析
+		}
+};
+
+class ElementB : public Element{
+public:
+		void accept(Visitor &amp;visitor) override{
+				visitor.visitElementB(*this);//第二次多态辨析
+		}
+};</code></pre><ul id="6a746878-d036-4b51-942c-0aca689dd859" class="bulleted-list"><li style="list-style-type:disc">修改：</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="5bf2199a-b2ad-4cb1-9cd1-0fb08cd2d864" class="code"><code class="language-C++">//ConcreteVisitor（具体访问者）：实现Visitor接口，为不同类型的元素提供具体的访问逻辑。
+
+class Visitor1 : public Visitor{
+public:
+		void visitElementA(ElementA&amp; element) override{
+				cout &lt;&lt; &quot;Visitor1 is processing ElementA&quot; &lt;&lt; endl;
+		};
+		void visitElementB(ElementB&amp; element) override{
+				cout &lt;&lt; &quot;Visitor2 is processing ElementB&quot; &lt;&lt; endl;
+		};
+};
+
+class Visitor2 : public Visitor{
+public:
+		void visitElementA(ElementA&amp; element) override{
+				cout &lt;&lt; &quot;Visitor1 is processing ElementA&quot; &lt;&lt; endl;
+		};
+		void visitElementB(ElementB&amp; element) override{
+				cout &lt;&lt; &quot;Visitor2 is processing ElementB&quot; &lt;&lt; endl;
+		};
+};</code></pre><ul id="8d8e9f3a-a9b9-4733-bb7f-fa5ba038ae4f" class="bulleted-list"><li style="list-style-type:disc">主函数</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a165c0f8-67f6-42c0-b5da-394f13ae8c5f" class="code"><code class="language-C++">int main(){
+		Visitor2 visitor;
+		ElementB element;
+		element.accept(visitor);
+}</code></pre><h2 id="d8ae32fe-f857-4715-9960-b6238b6c47e3" class="">类图：</h2><figure id="9d2260f9-49df-4bc3-b5d5-095dc325d679" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_08.38.44.png"><img style="width:2294px" src="../../statics/images/designPatterns/cut2024-09-25_08.38.44.png"/></a></figure><h2 id="cd24e65a-fec0-4564-98e8-4b2687cc2e5a" class="">总结：</h2><ul id="10cd6fb7-26af-8023-88ee-d9f3780e56a2" class="bulleted-list"><li style="list-style-type:disc">Visitor模式利用双重分发（double dispatch）来实现在不更改Element类层次结构的前提下，在运行时透明的为类层次结构上各个类动态添加新的操作</li></ul><ul id="10cd6fb7-26af-80ac-80a6-dbe013110655" class="bulleted-list"><li style="list-style-type:disc">所谓double dispatch即Visitor模式中间包括了两个动态分发；第一个为 accept 方法的多态辨析；第二个为visitElementX方法的多态辨析</li></ul><ul id="10cd6fb7-26af-804b-a0f4-e8cb23d0e2ac" class="bulleted-list"><li style="list-style-type:disc">最大缺点在于扩展类层次结构，会导致Visitor类的改变。因此Visitor模式适用于“Element类层次结构稳定，而其中操作却经常面临频繁改动”</li></ul><h1 id="10cd6fb7-26af-8078-9696-d791621231cd" class=""> Interpreter（解析器）</h1><h2 id="10cd6fb7-26af-805d-b737-daa2f0e3c806" class="">动机：</h2><ul id="10cd6fb7-26af-80d6-8409-c4eee3de292e" class="bulleted-list"><li style="list-style-type:disc">在软件构建过程中，如果某一特定领域的问题比较复杂，类似的结构不断重复出现，如果使用不同的编程方式会面临非常频繁的变化</li></ul><ul id="10cd6fb7-26af-80b4-bfed-e4d1336786c6" class="bulleted-list"><li style="list-style-type:disc">在这种情况，将特定领域的问题表达为某种语法规下的句子然后构建一个解释器来解释这样的句子，从而达到解决问题的目的</li></ul><h2 id="10cd6fb7-26af-8031-b3e9-fdb217bb86f9" class="">定义：</h2><p id="10cd6fb7-26af-805f-81cd-e1a758f9d498" class="">给定一个语言，定义他的文法的一种表示，并定义一个解释器，这个解释器使用这种表示来解释语言中的句子</p><h2 id="10cd6fb7-26af-807d-8543-f464cfa05c5c" class="">例子：</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="10cd6fb7-26af-8062-9aa1-f060d92093a6" class="code"><code class="language-C++">//抽象基类 表达式
+class Expression{
+public:
+	//解析
+	virtual int interpreter(map&lt;char, int&gt; var) = 0;
+	virtual ~Expression() = default;
+};
+
+//变量表达式
+class VarExpression : public Expression{
+	char key;
+public:
+	VarExpression(const char&amp; key){
+		this-&gt;key = key;
+	}
+	int interpreter(map&lt;char, int&gt; var) override{
+		return var[key];
+	}
+};
+
+//符号表达式
+class SymbolExpression : public Expression{
+protected:
+	//运算符左右两个符号表达式
+	Expression* left;
+	Expression* right;
+	
+public:
+	SymbolExpression(Expression* left, Expression* right) : left(left), right(right){}
+};
+
+//加法运算
+class AddExpression : public SymbolExpression{
+public;
+	AddExpression(Expression* left, Expression* right) : SymbolExpression(left, right){}
+	int interpretter(map&lt;char, int&gt; var) override{
+		return left-&gt;interpreter(var) + right-&gt;interpreter(var);
+	}
+};
+
+//加法运算
+class AddExpression : public SymbolExpression{
+public;
+	AddExpression(Expression* left, Expression* right) : SymbolExpression(left, right){}
+	
+	int interpretter(map&lt;char, int&gt; var) override{
+		return left-&gt;interpreter(var) + right-&gt;interpreter(var);
+	}
+};
+
+//减法运算
+class SubExpression : public SymbolExpression{
+public;
+	SubExpression(Expression* left, Expression* right) : SymbolExpression(left, right){}
+	
+	int interpretter(map&lt;char, int&gt; var) override{
+		return left-&gt;interpreter(var) - right-&gt;interpreter(var);
+	}
+};
+
+Expression* analyse(string expStr){
+	stack&lt;Expression&gt; expStack;
+	Expression* left = nullptr;
+	Expression* right = nullptr;
+	for(int i = 0; i &lt; expStr.size(); i++){
+		switch(expStr[i]){
+			case &#x27;+&#x27;:
+				left = expStack.top();
+				right = new VarExpression(expStr[++i]);
+				expStack.push(new AddExpression(left, right));
+				break;
+			case &#x27;-&#x27;:
+				left = expStack.top();
+				right = new VarExpression(expStr[++i]);
+				expStack.push(new SubExpression(left, right));
+				break;
+			default:
+				//终结表达式
+				expStack.push(new ValExpression(expStr[i]));
+		}
+	}
+	
+	Expression* expression = expStack.top();
+	
+	return expression;
+}
+
+void release(Expression* expression){
+	//释放表达式树的节点内存
+}
+
+int main(){
+	string exprStr = &quot;a+b-c+d&quot;;
+	map&lt;char, int&gt; var;
+	var.insert(make_pair(&#x27;a&#x27;, 5));
+	var.insert(make_pair(&#x27;b&#x27;, 2));
+	var.insert(make_pair(&#x27;c&#x27;, 1));
+	var.insert(make_pair(&#x27;d&#x27;, 6));
+	
+	Expression* expression = analyse(expStr);
+	
+	int result = expression-&gt;interpreter(var);
+	
+	cout &lt;&lt; result &lt;&lt;endl;
+	
+	release(expression);
+	
+	return 0;
+
+}</code></pre><h2 id="10cd6fb7-26af-80d6-96f0-d2a33aadb705" class="">结构：</h2><figure id="10cd6fb7-26af-807c-afab-d9781b329df5" class="image"><a href="../../statics/images/designPatterns/cut2024-09-25_09.53.55.png"><img style="width:707.984375px" src="../../statics/images/designPatterns/cut2024-09-25_09.53.55.png"/></a></figure><p id="10cd6fb7-26af-80b7-b105-d67c2e3aa567" class="">
+</p><h2 id="10cd6fb7-26af-80e2-93a3-fbc3da2f150e" class="">要点：</h2><ul id="10cd6fb7-26af-80f5-b697-f301f92e36c6" class="bulleted-list"><li style="list-style-type:disc">Interpreter模式的应用场合是Interpreter模式应用中的难点，只有满足“业务规则频繁变化”且类似的结构不断重复出现，并且容易抽象为语法规则的问题才是和Interpreter模式</li></ul><ul id="10cd6fb7-26af-801c-ab98-f6a5518a958f" class="bulleted-list"><li style="list-style-type:disc">使用Interpreter模式来表示文法规则，从而可以使用面向对象技巧来扩展文法</li></ul><ul id="10cd6fb7-26af-800c-8965-c78c49914155" class="bulleted-list"><li style="list-style-type:disc">Interpreter模式比较适合简单的文法表示，对于复杂的文法表示，Interpreter模式会产生比较大的类层次结构，需要求助于语法分析生成器这种的标准工具</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+{{end}}
