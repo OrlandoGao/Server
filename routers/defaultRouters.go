@@ -2,7 +2,6 @@ package routers
 
 import (
 	controllers "ginproject/controllers"
-
 	"github.com/gin-gonic/gin"
 )
 
