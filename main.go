@@ -28,13 +28,7 @@ func main() {
 	//初始化路由
 	//初始化默认界面
 	routers.DefaultRountersInit(r)
-	//初始化管理员界面
-	routers.AdminRoutersInit(r)
-	//初始化论坛界面
-	routers.ForumRoutersInit(r)
-	// 初始化笔记
-	routers.NotesRoutersInit(r)
 
-	r.Run()
+	r.Run(":80")
 	
 }
